@@ -1,0 +1,157 @@
+startTimeFromBestTime <- function(x, seconds_finish = 27000) {
+  
+  out <- character(length(x))
+  
+  ind_is_finite <- is.finite(x)
+  
+  out[ind_is_finite] <-  seconds_to_hms_simple(seconds_finish - x[ind_is_finite])
+  out[!ind_is_finite] <-   "6:00:00"
+  out[x>5400] <-   "6:00:00"
+  
+  out
+}
+
+
+cumulative_cat <- function(x, ref) {
+  
+  # browser()
+  
+  out <- character(length(x))
+  
+  out[1] <- glue("{ref_i}: {x_i}", ref_i = ref[1], x_i= x[1])
+  
+  if(length(x)>1) {
+    
+    
+    for(i in 2:length(x)) {
+      if(x[i]==x[i-1]){
+        out[i] <- glue("{out_previous}", out_previous = out[i-1])
+        
+      } else {
+        out[i] <- glue("{ref_i}: {x_i}<br>{out_previous}", ref_i = ref[i], x_i= x[i], out_previous = out[i-1])
+        
+      }
+      
+      # out[i] <- paste0(out[i],out[i-1])
+    }
+    
+  }
+  out
+  
+  out_list <- strsplit(out, "<br>") |> lapply(as.list)
+}
+# cumulative_cat_list <- function(x, ref) {
+#   
+#   # browser()
+#   
+#   out <- list()
+#   
+#   out[[1]] <- glue("{ref_i}: {x_i}", ref_i = ref[1], x_i= x[1])
+#   
+#   if(length(x)>1) {
+#     
+#     
+#     for(i in 2:length(x)) {
+#       if(x[i]==x[i-1]){
+#         out[[i]] <- glue("{out_previous}", out_previous = out[[i-1]])
+#         
+#       } else {
+#         out[[i]] <- glue("{ref_i}: {x_i}<br>{out_previous}", ref_i = ref[i], x_i= x[i], out_previous = out[[i-1]])
+#         
+#       }
+#       
+#       # out[i] <- paste0(out[i],out[i-1])
+#     }
+#     
+#   }
+#   out
+# }
+
+
+prepJson_startTimes <- function(conn, pathsWebsiteData) {
+  
+  dt_members <-  dt_dbReadTable(conn, "members")
+  dt_StartPointsBest <-  dt_dbReadTable(conn, "timesBestPoints")
+  
+  dt_memberChipLatest <- dt_dbReadTable(conn, "memberChipLatest")
+
+  
+  dt_StartPointsBest[dt_members, on = .(id_member), name_display := i.name_display]
+  
+  
+  # dt_StartPointsBest[, thisStartTime_display := startTimeFromBestTime(timeBestPrevious)]
+  dt_StartPointsBest[, nextStartTime_display := startTimeFromBestTime(timeBest)]
+  
+  
+  
+  # date next
+  
+  dt_StartPointsBest[, dateNextStart := as.Date(date_ymd) + 7]
+  dt_StartPointsBest[, dateNextStartDisplay := format(dateNextStart, "%e %b %Y") |> trimws()]
+  
+  dt_StartPointsBest[, hasChanges := any(timeDiff < 0), by = .(id_member)]
+  dt_StartPointsBest[(hasChanges), changeHistory := list(cumulative_cat(nextStartTime_display, dateNextStartDisplay)), by = .(id_member)]
+  
+  dt_StartPointsBest[dt_memberChipLatest, on = .(id_member), chipLatest := i.chip]
+  
+  
+  dt_StartPointsBest[, .(dateNextStartDisplay = dateNextStartDisplay[1],
+                         starts = list(data.table(
+                           chipLatest,
+                           id_member,
+                           name_display,
+                           nextStartTime_display,
+                           hasChanges,
+                           changeHistory))),
+                     by = dateNextStart][order(dateNextStart)] |> 
+    toJSON() |> 
+    write(file.path(pathsWebsiteData$source, "startTimes.json"))
+  
+  
+  
+  # column names
+  dt_cols <- data.table(columnID = c("chipLatest","nextStartTime_display"),
+                        title = c("Chip","Start Time")
+                        )
+  
+  
+  
+  # dt_totalDistanceNotes <- list(races_full =  "Includes Sprint (previously Full) and Double Distance events.",
+  #                               races_all = "In addition to Sprint+, this includes Tempta (previously Intermediate), Aquabike, Swimrun, and Teams but records for these are not comprehensive.",
+  #                               sprint = "Since 2018/19 seson",
+  #                               tempta = "Since 2018/19 seson",
+  #                               doubledistance = "Since 2018/19 seson",
+  #                               teams = "Since 2018/19 season, not comprehensive"
+  #                               
+  # ) |> 
+  #   list_to_dt()
+  
+  
+  # dt_cols[dt_totalDistanceNotes, on = .(columnID = name), note := i.value]
+  
+  
+  
+  dt_cols[columnID != "name_display"] |> 
+    jsonlite::toJSON() |> 
+    write(file.path(pathsWebsiteData$source, "startTimes_columns.json"))
+  
+  
+}
+
+if(FALSE) {
+  
+  dt_StartPointsBest$date_ymd |> as.Date()
+  
+  dt_StartPointsBest[id_member=="bartlett_adrian"]
+  dt_StartPointsBest[id_member=="pearce_clive"]$changeHistory
+  dt_StartPointsBest[id_member=="lowth_gavin"]
+  
+  
+  dt_StartPointsBest[, .(dateNextStartDisplay = dateNextStartDisplay[1],
+                         starts = list(data.table(
+                           id_member,
+                           name_display,
+                           nextStartTime_display,
+                           changeHistory))),
+                     by = dateNextStart][order(dateNextStart)][2,starts][[1]][43,changeHistory ]
+}

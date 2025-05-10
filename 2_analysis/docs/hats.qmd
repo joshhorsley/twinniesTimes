@@ -1,0 +1,274 @@
+---
+title: "Hats!"
+format: docx
+execute: 
+  echo: false
+  warning: false
+  message: false
+  
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r}
+
+library(RSQLite)
+library(data.table)
+library(readxl)
+library(zoo)
+library(lubridate)
+library(glue)
+library(jsonlite)
+library(XLConnect)
+library(openxlsx)
+library(reticulate)
+library(english)
+library(multicool)
+library(here)
+
+invisible(
+  lapply(list.files(here("R"), full.names = TRUE),
+         source
+  )
+)
+
+
+if(!exists("conn")) {
+  conn <- dbConnect(RSQLite::SQLite(), here("../3_data_derived/all_results.sqlite"))
+}
+
+
+
+# options -----------------------------------------------------------------
+
+
+milestones_use <- seq(from = 100, to = 700, by = 100)
+season_active <- "2023-2024"
+longerTermThreshold <- 50L
+
+
+# Load --------------------------------------------------------------------
+
+
+dt_totalRacesDate <- dt_dbReadTable(conn, "totalRacesDate")
+dt_members <- dt_dbReadTable(conn, "members")
+dt_races <- dt_dbReadTable(conn, "races")
+
+
+
+```
+
+```{r}
+# Prep --------------------------------------------------------------------
+
+
+dt_races[is.na(cancelled_reason), racesOrdinal := seq(.N)]
+dt_totalRacesDate[dt_races, on = .(date_ymd), racesOrdinal := i.racesOrdinal]
+
+
+dt_members[, noLongerRacing := noLongerRacing==1]
+
+
+dt_totalRacesDate[dt_members, on = .(id_member), `:=`(name_display = i.name_display,
+                                                      name_last = i.name_last,
+                                                      totalRacesMetric = i.totalRacesMetric,
+                                                      noLongerRacing = i.noLongerRacing)]
+
+
+dt_totalRacesDate[, races_use := ifelse(totalRacesMetric=="full",races_full, races_all)]
+
+
+
+# Projection --------------------------------------------------------------
+
+
+# dt_totalRacesDate[, longTermer := max(races_use,na.rm = TRUE) >= longerTermThreshold, by = .(id_member)]
+
+
+dt_active <- dt_totalRacesDate[!(noLongerRacing) & season >= season_active & !is.na(races_use), .(
+  racesOrdinal_min = min(racesOrdinal),
+  # races_use_min = min(races_all),
+  total_races_current = max(races_use,na.rm = TRUE),
+  n_races = .N,
+  name_last = name_last[1])
+  , by = .(id_member, name_display)][n_races > 1]
+
+
+# n_acive <- nrow(dt_active)
+
+
+date_lastRace <- dt_totalRacesDate$date_ymd |> max()
+ordinal_lastRaces <- dt_races[date_ymd==date_lastRace]$racesOrdinal
+
+dt_active[, raceRate := (n_races)/(ordinal_lastRaces - racesOrdinal_min)]
+
+to_ci_nice <- function(est, se) {
+  glue("{est} ({lci}, {uci})",
+       est = round(est,0),
+       lci = floor(est - qnorm(0.975)*se),
+       uci = ceiling(est + qnorm(0.975)*se)
+  )
+}
+
+dt_active[, nextMilestone := milestones_use[cut(total_races_current+1, c(0,milestones_use),include.lowest = TRUE,labels = FALSE)]]
+
+prob_reach_milestone <- function(current, milestone, raceRate, n_races) {
+  pbinom(q = milestone - current,
+         size = n_races,
+         prob = raceRate,lower.tail = FALSE) |> round(2)
+}
+
+
+dt_active[, est25mean := raceRate*25]
+dt_active[, est25se := sqrt(25*raceRate * (1-raceRate))]
+dt_active[, est25newCi := to_ci_nice(est25mean,est25se )]
+dt_active[, est25totalCi := to_ci_nice(est25mean + total_races_current,est25se )]
+dt_active[, probMilestone25 := prob_reach_milestone(total_races_current,nextMilestone,raceRate,25), by= .(id_member)]
+dt_active[, probMilestone50 := prob_reach_milestone(total_races_current,nextMilestone,raceRate,50), by= .(id_member)]
+
+dt_active[, est50mean := raceRate*50]
+dt_active[, est50se := sqrt(50*raceRate * (1-raceRate))]
+dt_active[, est50newCi := to_ci_nice(est50mean,est50se )]
+dt_active[, est50totalCi := to_ci_nice(est50mean + total_races_current,est50se )]
+
+
+dt_expectMilstones <- rbindlist(list(
+  dt_active[order(nextMilestone), .(next25 = sum(probMilestone25),
+                                    next50 = sum(probMilestone50)),
+            by = .(milestone = as.character(nextMilestone))],
+  dt_active[order(nextMilestone), .(next25 = sum(probMilestone25),
+                                    next50 = sum(probMilestone50),
+                                    milestone = "all")]
+),use.names = TRUE)
+
+dt_expectMilstonesLong <- dt_expectMilstones |> 
+  melt.data.table(id.vars = "milestone",variable.name = "season",value.name = "passed",variable.factor = FALSE)
+
+dt_expectMilstonesLong[, passed_char := ifelse(passed==0,"",as.character(passed))]
+
+
+# Past --------------------------------------------------------------------
+
+
+dt_milestonesDate <- dt_totalRacesDate[races_use %in% milestones_use,
+                                       .(id_member, name_display, season, date_ymd, milestone = races_use)][
+                                         order(-milestone, date_ymd)]
+
+
+# milestones per season
+dt_summarySeasonLong0 <- rbindlist(
+  list(
+    dt_milestonesDate[, .(passed = .N), by = .(season, milestone)],
+    dt_milestonesDate[, .(passed = .N, milestone = "all"), by = .(season)]
+  ),
+  use.names = TRUE
+)
+
+dt_summarySeasonLong <- CJ(season = dt_summarySeasonLong0$season,
+                           milestone =c(as.character(milestones_use),dt_summarySeasonLong0$milestone),
+                           unique = TRUE)
+# dt_summarySeasonLong2[dt_summarySeasonLong, on = .(season, milestone), passed := default(i.passed, 0)]
+dt_summarySeasonLong[dt_summarySeasonLong0, on = .(season, milestone), passed := i.passed]
+dt_summarySeasonLong[is.na(passed), passed := 0]
+
+setorder(dt_summarySeasonLong, -season, milestone)
+
+dt_summarySeasonLong[, pass_cumulative_reverse := cumsum(passed), by = milestone]
+
+dt_summarySeasonLong[, passed_char := ifelse(passed==0,"",as.character(passed))]
+dt_summarySeasonLong[, pass_cumulative_reverse := ifelse(pass_cumulative_reverse==0,"",as.character(pass_cumulative_reverse))]
+
+
+
+dt_summaryAllLong <- rbindlist(list(dt_summarySeasonLong,dt_expectMilstonesLong),use.names = TRUE,fill = TRUE)
+
+setorder(dt_summaryAllLong, season, milestone)
+
+dt_summaryAllLong[, seasonDisplay := ifelse(
+  season %in% dt_expectMilstonesLong$season,
+  season,
+  seasonNice(season))]
+
+
+```
+
+```{r}
+dateUpdate <- date_lastRace |> toNiceDate()
+```
+
+
+# Summary by season and projection
+
+Total number of each milestone (and total) reached by season and projected for next 25 and 50 races. Current season is up to `r dateUpdate`. Note: 50 races projection includes 25 races projection.
+
+```{r}
+dt_summaryAllLong[] |> 
+  dcast.data.table(milestone ~ seasonDisplay, value.var = "passed_char",fill = "",drop = FALSE) |> 
+  knitr::kable()
+```
+
+# Reverse cumulative by season and milestone
+
+
+```{r}
+dt_summaryAllLong[, passed_for_cumulative := ifelse (season=="next25", 0, passed)]
+dt_summaryAllLong[.N:1, passed_cumulative_reverse := cumsum(ceiling(passed_for_cumulative)), by = .(milestone)]
+
+dt_summaryAllLong[season == "2021-2022"] |> 
+  dcast.data.table(milestone ~ seasonDisplay, value.var = "passed_cumulative_reverse",fill = "",drop = FALSE) |> 
+  knitr::kable()
+```
+
+
+
+# Expected Milestones
+
+All currently racing members with at least 1% chance to reach next milestones within 50 races of `r dateUpdate`.
+
+
+```{r}
+dt_active[probMilestone50 >= 0.01][order(-probMilestone50, -probMilestone25,nextMilestone), .(Name = name_display,
+              Current = total_races_current,
+              `Milestone` = nextMilestone,
+              `Race rate (%)` = round(raceRate*100, 0),
+              `Chance reach in 25 races (%)` = round(probMilestone25*100,0),
+              `Chance reach in 50 races (%)` =round(probMilestone50*100,0)
+              )] |> 
+  knitr::kable()
+```
+
+- Ordered highest to lowest chance
+- Race rate is number of races member participates in per number of races held since the start of `r seasonNice(season_active)`
+
+```{r}
+dt_active[probMilestone50 >= 0.01][order(name_last, name_display), .(Name = name_display,
+              Current = total_races_current,
+              `Milestone` = nextMilestone
+              )] |> 
+  knitr::kable()
+```
+
+# Recent Milestones
+
+Up to `r dateUpdate`
+
+```{r}
+split(dt_milestonesDate[, .(Name = name_display,
+                            Milestone = milestone)],
+      seasonNice(dt_milestonesDate$season))
+```
+
+
+# Possibly award
+
+```{r}
+season_cutoff <- "2021-2022"
+```
+
+
+```{r}
+split(dt_milestonesDate[season >= season_cutoff, .(Name = name_display,
+                            Milestone = milestone, `Season Reached` = season)],
+      seasonNice(dt_milestonesDate[season >= season_cutoff]$milestone))
+```

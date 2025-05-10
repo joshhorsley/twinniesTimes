@@ -1,0 +1,119 @@
+---
+format: docx
+execute: 
+  
+  echo: false
+  warning: false
+  message: false
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r}
+
+library(RSQLite)
+library(data.table)
+library(readxl)
+library(zoo)
+library(lubridate)
+library(glue)
+library(jsonlite)
+library(XLConnect)
+library(openxlsx)
+library(reticulate)
+library(english)
+library(multicool)
+
+library(here)
+
+invisible(
+  lapply(list.files(here("R"), full.names = TRUE),
+         source
+  )
+)
+
+
+if(!exists("conn")) {
+  conn <- dbConnect(RSQLite::SQLite(), here("../3_data_derived/all_results.sqlite"))
+}
+
+
+
+# options -----------------------------------------------------------------
+
+
+
+# Load --------------------------------------------------------------------
+
+
+dt_members <- dt_dbReadTable(conn, "members")
+dt_raceResults <- dt_dbReadTable(conn, "raceResults")
+
+dt_twintownMeberships <- dt_dbReadTable(conn, "twintownMemberships")[date_updated==max(date_updated)]
+
+
+
+
+```
+
+```{r}
+# Prep --------------------------------------------------------------------
+
+
+
+dt_membersRecent <- dt_members[id_member %in% dt_raceResults[season>="2024-2025"]$id_member, .(name_display,twintownsMembershipID, name_last)] 
+
+dt_membersRecent <- rbindlist(list(
+  dt_membersRecent,
+  dt_twintownMeberships[twintownsMembershipID %notin% dt_membersRecent$twintownsMembershipID,
+                        .(
+                          name_display = as.character(glue({"{nameFirst} {nameLast}"}), 
+                                                      nameFirst = nameFirst,
+                                                      nameLast = nameLast),
+                          twintownsMembershipID,
+                          name_last = nameLast
+                        )
+  ]
+))
+
+cols <- c("date_dueMain","date_dueTriathlon", "financial")
+dt_membersRecent[dt_twintownMeberships, on = .(twintownsMembershipID), (cols) := mget(cols)]
+
+# dates
+date_update <- dt_twintownMeberships[1]$date_update |> as.Date()
+date_soon <- as.Date(rollforward(rollforward(date_update)+1))
+
+dt_membersRecent[, dueSoon_main := as.Date(date_dueMain) <= date_soon]
+dt_membersRecent[, dueSoon_triathlon := as.Date(date_dueTriathlon) <= date_soon]
+
+
+#order
+setorder(dt_membersRecent, name_last)
+
+```
+
+# Membership status as of `r toNiceDate(date_update)`
+
+## No Membership
+
+```{r}
+dt_membersRecent[is.na(date_dueMain) | is.na(date_dueTriathlon),
+                 .(Name = name_display,
+                   `ID` = ifelse(is.na(twintownsMembershipID), "", twintownsMembershipID))] |> 
+  knitr::kable()
+```
+
+
+## Expiring Soon
+ 
+```{r}
+dt_membersRecent[dueSoon_main | dueSoon_triathlon,
+                 .(Name = name_display,
+                   `ID` = ifelse(is.na(twintownsMembershipID), "", twintownsMembershipID),
+                   `Twin Towns` = date_dueMain,
+                   `Tri club` = date_dueTriathlon)] |> 
+  knitr::kable()
+```
+
+
+Those with an ID have recently had an active membership.
