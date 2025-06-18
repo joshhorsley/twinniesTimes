@@ -7,3 +7,9 @@
 3_startLists
 logs/*
 2_analysis/docs/*.docx
+
+# Apple filesystem
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon[]
