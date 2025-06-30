@@ -42,31 +42,50 @@ import Header from './navbar';
 
 import Home from './routes/home';
 
-import Points from './routes/points';
 import TotalRaces from './routes/total-races';
 import StartTimes from './routes/start-times';
+
+
+// Points -----------------------------------
+
+// old version
+import Points from './routes/points';
+
+
+
+import PointsDynamic, {
+  loader as pointsRootLoader
+} from './routes/points-root';
+
+import {pointsLoader} from './points';
+import PointsInstance from './routes/points-instance';
+
+
+// Members -----------------------------------
 
 import Members, {
   loader as membersRootLoader
 } from "./routes/members-root";
 
 import { memberLoader } from './members';
+import MemberInstance from './routes/member-instance';
 
 import MemberIndex from './routes/members-index';
 
-import MemberInstance , {
-  // loader as memberLoader
-} from './routes/member-instance';
+
+// Racers -----------------------------------
 
 import Races, {
   loader as racesRootLoader
 } from "./routes/races-root";
 
 
-import RaceIndex from './routes/races-index';
-
-import RaceInstance from './routes/race-instance';
 import { raceLoader } from './races';
+import RaceInstance from './routes/race-instance';
+
+// import RaceIndex from './routes/races-index';
+
+// Other -----------------------------------
 
 import ClubStats from './routes/club-stats';
 
@@ -100,10 +119,10 @@ const router = createBrowserRouter(
         element={<App />}
         errorElement={<ErrorPage />}
         >
-        {/* Home */}
+        {/* Home -------------------------------------------------------*/}*/}
         <Route index element={<Home />} />
 
-        {/* Members */}
+        {/* Members -------------------------------------------------------*/}*/}
         <Route
           exact path="/members"
           element={<Members/>}
@@ -119,7 +138,7 @@ const router = createBrowserRouter(
           </Route>
         </Route>
 
-        {/* Races */}
+        {/* Races -------------------------------------------------------*/}*/}
         <Route
           exact path="/races"
           element={<Races/>}
@@ -141,23 +160,52 @@ const router = createBrowserRouter(
           </Route>
         </Route>
 
-        {/* Points */}
-        <Route path="/points" element={<Points />} /
+        {/* Points -------------------------------------------------------*/}
+        <Route path="/points-old" element={<Points />} /
         >
-        {/* Total Races */}
+
+        {/* Points dynamic -------------------------------------------------------*/}
+           
+           <Route
+            exact path="/points"
+            element={<PointsDynamic/>}
+            loader={pointsRootLoader}
+            errorElement={<ErrorPage />}
+          >
+             {dataMain.latestRace.date_ymd ? (
+            <Route index element={<Navigate to={`/points/${"2024-2025"}`}/>}/>
+            ) : ("")}
+
+          <Route
+            path ="/points/:pointsSeasonId"
+            element={<PointsInstance/>}
+            loader={pointsLoader}
+            errorElement={<ErrorPage />}>
+          </Route>
+
+              {/* <Route
+            path ="/points/:raceId"
+            element={<PointsInstance />}
+            loader={raceLoader}
+            errorElement={<ErrorPage />}>
+          </Route> */}
+        </Route>
+
+
+
+
+        {/* Total Races -------------------------------------------------------*/}
         <Route path="/total-races" element={<TotalRaces />} />
 
-        {/* Start times */}
+        {/* Start times -------------------------------------------------------*/}
         <Route path="/start-times" element={<StartTimes />} />
         <Route path="/pages/start_times" element={<Navigate to="/start-times" replace />}/>
 
-        {/* Race Stats */}
-        <Route path="/club-stats" element={<ClubStats />} /
-        >
+        {/* Race Stats -------------------------------------------------------*/}
+        <Route path="/club-stats" element={<ClubStats />} />
 
-        {/* Race Stats */}
-        <Route path="/committee" element={<Committee />} /
-        >
+        {/* Race Stats -------------------------------------------------------*/}
+        <Route path="/committee" element={<Committee />} />
 
 
       </Route>

@@ -50,7 +50,8 @@ export default function Header() {
             <Nav activeKey={pathname} className="me-auto">
             {/* <Nav.Link eventKey="/" as={Link} to="/">Home</Nav.Link> */}
             <Nav.Link eventKey="/start-times" as={NavLink} to="/start-times">Start Times</Nav.Link>
-            <Nav.Link eventKey="/points" as={NavLink} to="/points">Points</Nav.Link>
+            <Nav.Link eventKey="/points-old" as={NavLink} to="/points-old">Points (Old)</Nav.Link>
+            <Nav.Link eventKey="/points" as={NavLink} to="/points">Points (New)</Nav.Link>
             <Nav.Link eventKey="/total-races" as={NavLink} to="/total-races">Total Races</Nav.Link>
             <Nav.Link eventKey="/races" as={NavLink} to="/races">Races</Nav.Link>
             <Nav.Link eventKey="/members" as={NavLink} to="/members">Members</Nav.Link>

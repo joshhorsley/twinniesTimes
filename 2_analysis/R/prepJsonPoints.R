@@ -1,4 +1,4 @@
-prepJsonPoints <- function(conn, path_source, tri_cols) {
+prepJsonPoints <- function(conn, path_pointsData, path_source, tri_cols) {
   
   
   # Load --------------------------------------------------------------------
@@ -8,6 +8,21 @@ prepJsonPoints <- function(conn, path_source, tri_cols) {
   dt_StartPointsBest <-  dt_dbReadTable(conn, "timesBestPoints")
   
   dt_StartPointsBest[, isWeekZero := isWeekZero ==1]
+  
+  
+
+  # Point Seasons list ------------------------------------------------------
+  
+  
+  dt_seasonList <- dt_StartPointsBest[, .(season_display = seasonNice(season)),by = .(season)]
+  setorder(dt_seasonList, -season)
+  
+  # race list flat
+  path_pointsSeasonList <- file.path(path_source, "pointsSeasonList.json")
+  
+  dt_seasonList |> 
+    toJSON() |> 
+    write(path_pointsSeasonList)
   
   
   # Common ------------------------------------------------------------------
@@ -139,7 +154,7 @@ prepJsonPoints <- function(conn, path_source, tri_cols) {
   
   dt_plotRefs[, yaxisAddIn := data.table(list(list(
     tickmode = "array",
-    range = c(0, dt_maxPoints$y_plot + 1),
+    range = c(0, y_plot + 1),
     tickvals = n_athletes - unlist(yTickList) + 1,
     ticktext = unlist(yTickList)
     
@@ -186,7 +201,8 @@ prepJsonPoints <- function(conn, path_source, tri_cols) {
   
   for( i_season in dt_plotRefs$season) {
     
-    list_export <- list(dateUpdated  = toNiceDate(dt_date_max[season==i_season]$date_max),
+    list_export <- list(season_display = dt_seasonList[season==i_season]$season_display,
+                        dateUpdated  = toNiceDate(dt_date_max[season==i_season]$date_max),
                         dataTable = dt_pointsTab[season==i_season],
                         plot = list(
                           frames = dt_pointsPlotData[season==i_season]$frames,
@@ -194,9 +210,13 @@ prepJsonPoints <- function(conn, path_source, tri_cols) {
                           yaxisAddIn = dt_plotRefs[season==i_season]$yaxisAddIn[[1]])
     )
     
+    path_save <-  file.path(path_pointsData, 
+                            glue::glue("{i_season}.json", i_season = i_season))
+    
     list_export |> 
       jsonlite::toJSON(auto_unbox = TRUE) |>
-      write(file.path(path_source, "points.json"))
+      write(path_save)
+    
     
   }
   

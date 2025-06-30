@@ -148,6 +148,7 @@ pathsWebsiteData <- list(
 
 pathsWebsiteData$memberData <- file.path(pathsWebsiteData$public, "members")
 pathsWebsiteData$raceData <- file.path(pathsWebsiteData$public, "races")
+pathsWebsiteData$pointsData <- file.path(pathsWebsiteData$public, "points")
 
 clearWebsiteData(pathsWebsiteData)
 
@@ -159,7 +160,8 @@ prepJson_main(conn, pathsWebsiteData$source)
 prepJson_home(pathsWebsiteData$source)
 prepJson_startTimes(conn, pathsWebsiteData$source)
 prepJsonTotalRaces(conn, pathsWebsiteData$source)
-prepJsonPoints(conn, pathsWebsiteData$source, tri_cols)
+
+prepJsonPoints(conn, pathsWebsiteData$pointsData, pathsWebsiteData$source, tri_cols)
 
 prepJsonMemberData(conn, pathsWebsiteData$source, pathsWebsiteData$memberData)
 prepJsonRaceData(conn, pathsWebsiteData$source, pathsWebsiteData$raceData)
