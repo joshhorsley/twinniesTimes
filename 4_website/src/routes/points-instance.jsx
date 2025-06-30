@@ -10,6 +10,7 @@ import { TabView, TabPanel } from "primereact/tabview";
 
 import PageTitle from "../components/PageTitle";
 import PointsPlotDynamic from "../components/PointsPlotDynamic";
+import PointsTableDynamic from "../components/PointsTableDynamic";
 
 // Component ------------------------------------------------
 
@@ -37,7 +38,7 @@ export default function PointsInstance() {
           </TabPanel>
 
           <TabPanel header="" leftIcon="pi pi-table mr-2">
-            {/* <PointsTable/> */}
+            <PointsTableDynamic tableData={season.dataTable} />
           </TabPanel>
 
           <TabPanel header="Rules">

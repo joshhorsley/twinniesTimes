@@ -41,9 +41,6 @@ import StartTimes from "./routes/start-times";
 
 // Points -----------------------------------
 
-// old version
-import Points from "./routes/points";
-
 import PointsDynamic, {
   loader as pointsRootLoader,
 } from "./routes/points-root";
@@ -142,8 +139,6 @@ const router = createBrowserRouter(
             errorElement={<ErrorPage />}
           ></Route>
         </Route>
-        {/* Points -------------------------------------------------------*/}
-        <Route path="/points-old" element={<Points />} />
         {/* Points dynamic -------------------------------------------------------*/}
         <Route
           exact
