@@ -260,7 +260,6 @@ export default function RacePlot2({plotData}) {
                     side: "top",
                 }
 
-                console.log(xaxisPrep)
             }
 
                // number of racers displayed
