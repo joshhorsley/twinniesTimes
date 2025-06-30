@@ -6,6 +6,9 @@ init_db <- function(path_db) {
   
   if(file.exists(path_db)) unlink(path_db)
   
+  path_dir <- dirname(path_db)
+  if(!dir.exists(path_dir)) dir.create(path_dir, recursive = TRUE)
+  
   conn <- dbConnect(RSQLite::SQLite(), path_db)
   dbExecute(conn, "PRAGMA foreign_keys=ON")
   
