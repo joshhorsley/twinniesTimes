@@ -8,7 +8,7 @@ export async function getRaces(query) {
   let races = structuredClone(racesAll);
   if (query) { 
     // this isn't perfect
-    racesAll.forEach(function(item, index) { races[index].options = matchSorter(item.options, query, {keys: ["date_ymd", "date_display"]})});
+    racesAll.forEach(function(item, index) { races[index].options = matchSorter(item.options, query, {keys: ["date_ymd", "date_display", "extraNote"]})});
   }
 
   return(races)
