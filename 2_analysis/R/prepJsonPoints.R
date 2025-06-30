@@ -107,8 +107,6 @@ prepJsonPoints <- function(conn, path_source, tri_cols) {
     ))
   ), by = .(date_ymd, season)]
   
-  # dt_pointsPlot[.N,frames]
-  
   
   ## annotation --------------------------------------------------------------------
   
@@ -173,8 +171,6 @@ prepJsonPoints <- function(conn, path_source, tri_cols) {
   
   dt_pointsTab[, rankIsEqual := .N>1, by = .(rank_all_total, season)]
   
-  # dt_pointsTab[dt_members, on = .(id_member), name_display := i.name_display]
-  
   dt_pointsTab[, hasChangeDisplay := "1"]
   
   
@@ -200,9 +196,6 @@ prepJsonPoints <- function(conn, path_source, tri_cols) {
     
     list_export |> 
       jsonlite::toJSON(auto_unbox = TRUE) |>
-      # remove boxing from legendrank
-      # gsub(pattern = "\"legendrank\": \\x5B([0-9])\\x5D", replacement ="\"legendrank\": \\1") |> 
-      
       write(file.path(path_source, "points.json"))
     
   }
