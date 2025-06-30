@@ -126,11 +126,11 @@ const router = createBrowserRouter(
           loader={racesRootLoader}
           errorElement={<ErrorPage />}
           >
-          <Route index element={<RaceIndex />}/>
+          {/* <Route index element={<RaceIndex />}/> */}
 
           {/* Latest race redirect */}
           {dataMain.latestRace.date_ymd ? (
-            <Route path="/races/latest" element={<Navigate to={`/races/${dataMain.latestRace.date_ymd}`}/>}/>
+            <Route index element={<Navigate to={`/races/${dataMain.latestRace.date_ymd}`}/>}/>
             ) : ("")}
 
           <Route
