@@ -28,7 +28,7 @@ export default function PointsInstance() {
       {/* <PageTitle title = "points test"/> */}
 
       <Container>
-        <h1>
+        <h1 className="memberTitle">
           {season.season_display} Points Standing as of {season.dateUpdated}
         </h1>
 
