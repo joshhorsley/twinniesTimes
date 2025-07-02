@@ -18,8 +18,6 @@ import PointsRules from "../components/PointsRules";
 export default function PointsInstance() {
   // debugger;
   const { season } = useLoaderData();
-  console.log("good 3");
-  console.log(season);
 
   return (
     <>

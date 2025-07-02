@@ -13,7 +13,6 @@ export async function getPointsSeasons(query) {
 }
 
 export async function getPointsSeason(value) {
-  console.log(value);
   if (pointsSeasonAll.filter((season) => season.season == value).length == 0) {
     throw new Response("", {
       status: 404,
@@ -28,9 +27,6 @@ export async function getPointsSeason(value) {
   });
 
   const pointsData = await response.json();
-  // debugger;
-  console.log("good 1");
-  console.log(pointsData);
   return pointsData ?? null;
 }
 
@@ -43,7 +39,5 @@ export async function pointsLoader({ params }) {
       statusText: "Season not found",
     });
   }
-  console.log("good 2");
-  console.log(season);
   return { season };
 }
