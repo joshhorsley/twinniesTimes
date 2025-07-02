@@ -10,7 +10,7 @@ prepJsonPoints <- function(conn, path_pointsData, path_source, tri_cols) {
   dt_StartPointsBest[, isWeekZero := isWeekZero ==1]
   
   
-
+  
   # Point Seasons list ------------------------------------------------------
   
   
@@ -204,7 +204,8 @@ prepJsonPoints <- function(conn, path_pointsData, path_source, tri_cols) {
     list_export <- list(season = i_season,
                         season_display = dt_seasonList[season==i_season]$season_display,
                         dateUpdated  = toNiceDate(dt_date_max[season==i_season]$date_max),
-                        dataTable = dt_pointsTab[season==i_season],
+                        table = list(cols = dt_cols,
+                                     data = dt_pointsTab[season==i_season]),
                         plot = list(
                           frames = dt_pointsPlotData[season==i_season]$frames,
                           annotation = dt_plotRefs[season==i_season]$plotAnnotation,
@@ -220,9 +221,5 @@ prepJsonPoints <- function(conn, path_pointsData, path_source, tri_cols) {
     
     
   }
-  
-  dt_cols |> 
-    jsonlite::toJSON() |> 
-    write(file.path(path_source, "points_columns.json"))
-  
+
 }

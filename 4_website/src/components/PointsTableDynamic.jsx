@@ -17,11 +17,6 @@ import { Card, Popover, OverlayTrigger } from "react-bootstrap";
 // import { IconField } from 'primereact/iconfield';
 // import { InputIcon } from 'primereact/inputicon';
 
-//  Data --------------------------------------------------------
-
-// import dataMain from "../data/points.json";
-import data_cols from "../data/points_columns.json";
-
 //  Component --------------------------------------------------------
 
 export default function PointsTableDynamic({ tableData }) {
@@ -137,7 +132,7 @@ export default function PointsTableDynamic({ tableData }) {
 
   return (
     <DataTable
-      value={tableData}
+      value={tableData.data}
       // className='p-datatable-customers stickyTable'
 
       expandedRows={expandedRows}
@@ -197,7 +192,7 @@ export default function PointsTableDynamic({ tableData }) {
         style={{ minWidth: "100px" }}
       />
 
-      {data_cols.map((col) => (
+      {tableData.cols.map((col) => (
         <Column
           key={col.columnID}
           field={col.columnID}

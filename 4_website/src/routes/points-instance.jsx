@@ -37,7 +37,7 @@ export default function PointsInstance() {
           </TabPanel>
 
           <TabPanel header="" leftIcon="pi pi-table mr-2">
-            <PointsTableDynamic tableData={season.dataTable} />
+            <PointsTableDynamic tableData={season.table} />
           </TabPanel>
 
           <TabPanel header="Rules">
