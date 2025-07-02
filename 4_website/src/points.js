@@ -7,9 +7,8 @@ export async function getPointsSeasons(query) {
   let pointsSeasons = structuredClone(pointsSeasonAll);
   if (query) {
     // this isn't perfect
-    // pointsSeasonAll.forEach(function(item, index) { pointsSeasons[index].options = matchSorter(item.options, query, {keys: ["season"]})});
+        pointsSeasons = matchSorter(pointsSeasonAll, query, { keys: ["season"] });
   }
-
   return pointsSeasons;
 }
 
