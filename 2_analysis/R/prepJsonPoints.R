@@ -201,7 +201,8 @@ prepJsonPoints <- function(conn, path_pointsData, path_source, tri_cols) {
   
   for( i_season in dt_plotRefs$season) {
     
-    list_export <- list(season_display = dt_seasonList[season==i_season]$season_display,
+    list_export <- list(season = i_season,
+                        season_display = dt_seasonList[season==i_season]$season_display,
                         dateUpdated  = toNiceDate(dt_date_max[season==i_season]$date_max),
                         dataTable = dt_pointsTab[season==i_season],
                         plot = list(
