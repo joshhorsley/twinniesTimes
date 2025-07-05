@@ -68,7 +68,11 @@ init_races(conn, paths$manual)
 init_distances(conn, paths$manual)
 
 
-# TODO setup season directories here
+# Create race directories -------------------------------------------------
+
+
+# directories to store registration and result files from webscorer
+create_webscorer_directories(conn, paths$webscorer)
 
 
 # Member info -------------------------------------------------------------
