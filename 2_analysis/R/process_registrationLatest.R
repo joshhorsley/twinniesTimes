@@ -24,7 +24,9 @@ prep_startLatest <- function(conn,
   date_ymd_use <- dt_reg[1]$date_ymd
   
   
-  dt_bestTimes <-  dt_dbReadTable(conn, "timesBestPoints")[date_ymd==max(date_ymd) & timeBest < Inf][, .(id_member, timeBest)]
+  dt_bestTimes <-  dt_dbReadTable(conn, "timesBestPoints")[date_ymd_next==date_ymd_use, .(id_member, nextStartUse)]
+  
+  if(nrow(dt_bestTimes)==0) stop("Do not have start times available for this date - do previous races need to flagged as cancelled?")
   dt_members <- dt_dbReadTable(conn, "members")
   
   dt_memberChipLatest <- dt_dbReadTable(conn, "memberChipLatest")
@@ -121,8 +123,8 @@ prep_startLatest <- function(conn,
   
   
   # prep wave times
-  dt_bestTimes[, `Start time`:= seconds_to_hms_simple(dt_timeOffsets$startOffset + 5400 - min(timeBest, 5400)), by = .(id_member)]
-  dt_bestTimes[, wave_time := seconds_to_hms_simple(7.5*3600 - min(timeBest, 5400)), by = .(id_member)]
+  dt_bestTimes[, `Start time`:= seconds_to_hms_simple(dt_timeOffsets$startOffset + 5400 - min(nextStartUse, 5400)), by = .(id_member)]
+  dt_bestTimes[, wave_time := seconds_to_hms_simple(7.5*3600 - min(nextStartUse, 5400)), by = .(id_member)]
   dt_bestTimes[, wave_names := paste0(name_display, collapse = ", "), by = .(`Start time`) ]
   
   dt_bestTimes[wave_time != "6:15:00", Wave :=  as.character(glue::glue_data(.SD, "{wave_time} ({wave_names})"))]
