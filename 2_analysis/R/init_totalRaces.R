@@ -65,7 +65,7 @@ init_totalRaces <- function(conn, path_manual) {
   # marginal race counts for each type and summaries
   dt_total_by_date_prep <-  dt_races_new[, .(races = .N), by = .(id_member,distanceID, season, date_ymd)]
   
-  cols_full <- c("sprint","doubledistance", "palindrometri")
+  cols_full <- c("sprint","doubledistance", "palindrometri", "longtri")
   dt_total_by_date_prep <- dt_total_by_date_prep[distanceID %in% cols_full, races_full := 1]
   
   dt_totals_by_date <-  dt_total_by_date_prep |> 

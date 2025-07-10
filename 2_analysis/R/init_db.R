@@ -94,6 +94,8 @@ palindromeaquabike INT,
 swimrun INT,
 riderun INT,
 teams INT,
+longtri INT,
+longaquabike INT,
   FOREIGN KEY(id_member) REFERENCES members(id_member) );") 
   
   
@@ -113,6 +115,8 @@ palindromeaquabike INT,
 swimrun INT,
 riderun INT,
 teams INT,
+longtri INT,
+longaquabike INT,
 FOREIGN KEY(id_member) REFERENCES members(id_member),
 FOREIGN KEY(season) REFERENCES seasons(season) 
 );") 
@@ -136,6 +140,8 @@ palindromeaquabike INT,
 swimrun INT,
 riderun INT,
 teams INT,
+longtri INT,
+longaquabike INT,
 FOREIGN KEY(id_member) REFERENCES members(id_member),
 FOREIGN KEY(season) REFERENCES seasons(season),
 FOREIGN KEY(date_ymd) REFERENCES races(date_ymd)
