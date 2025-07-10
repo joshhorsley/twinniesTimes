@@ -31,7 +31,7 @@ prepJsonRaceData <- function(conn,
   # Race list ---------------------------------------------------------------
   
   
-  dt_racesList <- dt_races[season=="2024-2025" & date_ymd %in% dt_raceResults$date_ymd]
+  dt_racesList <- dt_races[season>="2024-2025" & date_ymd %in% dt_raceResults$date_ymd]
   setorder(dt_racesList, -date_ymd)
   
   dt_racesList[, date_ymd := ymd(date_ymd)]
@@ -76,13 +76,13 @@ prepJsonRaceData <- function(conn,
   ## 2024-2025 Regular races -------------------------------------------------
   
   
-  dt_prep_2024_2025 <- dt_raceResults[season=="2024-2025"]
+  dt_prep_2024_2025 <- dt_raceResults[season>="2024-2025"]
   
   dt_prep_2024_2025[dt_members, on = .(id_member), name_display := i.name_display]
   dt_prep_2024_2025[dt_distances, on = .(distanceID), distanceDisplay := i.distanceDisplay]
   dt_prep_2024_2025[dt_bestPoints[id_member %in% dt_prep_2024_2025[distanceID=="sprint"]$id_member],
                     on = .(id_member, date_ymd),
-                    `:=`(timeBestPrevious = i.timeBestPrevious,
+                    `:=`(timeBestPrevious = i.timeBestPreviousUse,
                          timeDiff = i.timeDiff,
                          points_handicap_awarded = i.points_handicap_awarded)]
   
@@ -141,13 +141,13 @@ prepJsonRaceData <- function(conn,
   dt_distancePartsSummary[, varsUse := lapply(lapSplit, function(x) list(c(varsCommon, x))), by = distanceID]
   
   
-  dt_plotPrep <- dt_raceResults[season=="2024-2025"]
+  dt_plotPrep <- dt_raceResults[season>="2024-2025"]
   
   
   dt_plotPrep[dt_members, on = .(id_member), name_display := i.name_display]
   dt_plotPrep[dt_bestPoints[id_member %in% dt_plotPrep[distanceID=="sprint"]$id_member],
               on = .(id_member, date_ymd),
-              `:=`(timeBestPrevious = i.timeBestPrevious,
+              `:=`(timeBestPrevious = i.timeBestPreviousUse,
                    timeDiff = i.timeDiff,
                    points_handicap_awarded = i.points_handicap_awarded)]
   

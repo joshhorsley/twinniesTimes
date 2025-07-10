@@ -100,7 +100,7 @@ export default function MemberInstance() {
                   <span>
 
                   <h2 style={{display: "inline-block"}}>
-                  {'Races 2024/25' + ' ' } 
+                  {'Races 2024/25 onwards' + ' ' } 
                 <OverlayTrigger placement="top" overlay={popover}>
                   <span style={{width: "fit-content"}}>
                   &#9432;

@@ -5,12 +5,9 @@ prepJsonPoints <- function(conn, path_pointsData, path_source, tri_cols) {
   
   
   dt_members <-  dt_dbReadTable(conn, "members")
-  dt_StartPointsBest <-  dt_dbReadTable(conn, "timesBestPoints")
-  
-  dt_StartPointsBest[, isWeekZero := isWeekZero ==1]
-  
-  
-  
+  dt_StartPointsBest <-  dt_dbReadTable(conn, "timesBestPoints")[season>="2024-2025"]
+
+    
   # Point Seasons list ------------------------------------------------------
   
   
@@ -59,7 +56,7 @@ prepJsonPoints <- function(conn, path_pointsData, path_source, tri_cols) {
   ## data --------------------------------------------------------------------
   
   
-  dt_pointsPlotData <- dt_pointsPlot[!(isWeekZero) & (hasAnyPoints), data.table(
+  dt_pointsPlotData <- dt_pointsPlot[ (hasAnyPoints), data.table(
     frames = list(list(
       name = toNiceDateShort(date_ymd),
       data = list(
@@ -150,7 +147,7 @@ prepJsonPoints <- function(conn, path_pointsData, path_source, tri_cols) {
   dt_n_athletes <- dt_pointsPlot[(hasAnyPoints), .(n_athletes = max(y_plot, na.rm = TRUE)), by = season]
   
   dt_plotRefs[dt_n_athletes, on = .(season), n_athletes := i.n_athletes]
-  dt_plotRefs[, yTickList := list(list(c(1,seq(from = 5, to = n_athletes, by = 5))))]
+  dt_plotRefs[, yTickList := list(list(c(1,seq(from = 5, to = n_athletes, by = 5)))), by = season]
   
   dt_plotRefs[, yaxisAddIn := data.table(list(list(
     tickmode = "array",
@@ -221,5 +218,5 @@ prepJsonPoints <- function(conn, path_pointsData, path_source, tri_cols) {
     
     
   }
-
+  
 }

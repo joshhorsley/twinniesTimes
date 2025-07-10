@@ -56,11 +56,8 @@ prepJsonMemberData <- function(conn,
   ), by = .(distanceID)]
   dt_distanceParts[, lap := as.character(glue("Lap{lapNumber}", lapNumber = seq(.N))), by = distanceID]
   
-  
-  # dt_totalRacesOverall[dt_members, on = .(id_member), `:=`(name_display = i.name_display)]
-  
-  
-  ## members -----------------------------------------------------------------
+
+    ## members -----------------------------------------------------------------
   
   
   # member list
@@ -146,11 +143,10 @@ prepJsonMemberData <- function(conn,
   dt_timeRangeOut <- dt_timeRangesPrepCombined[, .(season_ranges = list(c(dateRange) |> setNames(season))), by = id_member]
   
   
-  
   ## race types ------------------------------------------------------------
   
   
-  dt_raceTypePrep <- dt_raceResults[season %in% "2024-2025", .(distanceID = unique(distanceID)), by = id_member]
+  dt_raceTypePrep <- dt_raceResults[season >= "2024-2025", .(distanceID = unique(distanceID)), by = id_member]
   dt_raceTypePrep[dt_distances, on = .(distanceID), distanceDisplay := i.distanceDisplay]
   
   dt_raceTypes <- dt_raceTypePrep[, .(raceType = list(list("value" = distanceID,
@@ -161,7 +157,7 @@ prepJsonMemberData <- function(conn,
   ## race data ------------------------------------------------------------------
   
   
-  dt_raceDataPrep <- dt_raceResults[season %in% "2024-2025" & !is.na(TimeTotal)] |> 
+  dt_raceDataPrep <- dt_raceResults[season >= "2024-2025" & !is.na(TimeTotal)] |> 
     melt.data.table(id.vars = c("season","date_ymd","id_member","distanceID","Category","TimeTotal"),
                     measure.vars = patterns("Lap"),
                     variable.name = "lap",
@@ -198,7 +194,7 @@ prepJsonMemberData <- function(conn,
   ## untimed results ------------------------------------------------------------------
   
   
-  dt_racePrepManual <- dt_raceResults[season %in% "2024-2025" & source=="manualParticipation"]
+  dt_racePrepManual <- dt_raceResults[season >= "2024-2025" & source=="manualParticipation"]
   
   dt_racePrepManual[dt_distances, on = .(distanceID), distanceDisplay := i.distanceDisplay]
   

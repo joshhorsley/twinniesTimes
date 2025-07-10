@@ -107,9 +107,8 @@ init_raceResultsTeams(conn, paths$manual)
 # total races
 init_totalRaces(conn, paths$manual)
 
-
 # points/start times/PBs
-init_startTimesAndPoints_2024_2025(conn, paths$manual)
+init_startTimesAndPoints(conn, paths$manual)
 
 
 # Registrations -----------------------------------------------------------
@@ -162,7 +161,7 @@ clearWebsiteData(pathsWebsiteData)
 
 prepJson_main(conn, pathsWebsiteData$source)
 prepJson_home(pathsWebsiteData$source)
-prepJson_startTimes(conn, pathsWebsiteData$source)
+prepJson_startTimesAll(conn, pathsWebsiteData$source)
 prepJsonTotalRaces(conn, pathsWebsiteData$source)
 
 prepJsonPoints(conn, pathsWebsiteData$pointsData, pathsWebsiteData$source, tri_cols)
