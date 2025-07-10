@@ -23,7 +23,8 @@ prep_startLatest <- function(conn,
   dt_memberChipLatest <- dt_dbReadTable(conn, "memberChipLatest")
   dt_memberChipLatest[, chip_character := as.character(chip)]
   
-  dt_raceInfo <- dt_dbReadTable(conn, "races")[date_ymd==date_ymd_use, .(start_time_change, season)]
+  dt_raceInfo <- dt_dbReadTable(conn, "races")[date_ymd==date_ymd_use, .(start_time_change, season, special_event)]
+  dt_raceInfo[is.na(special_event), special_event := ""]
   
   dt_totalRacesOverall <- dt_dbReadTable(conn, "totalRacesOverall")
   
@@ -101,6 +102,23 @@ prep_startLatest <- function(conn,
       )
     )
   }
+
+    
+  # add Long course?
+  if(dt_raceInfo$special_event=="Long Course") {
+    dt_always_options <- rbindlist(
+      list(
+        dt_always_options,
+        data.table(Name = "Placeholder 6:00",
+                   seconds_offset = dt_timeOffsets$startOffset,
+                   `Start time` = seconds_to_hms_simple(dt_timeOffsets$startOffset),
+                   Wave = "6:00:00",
+                   Distance = c("Long Tri","Long Aquabike"),
+                   Category = "All",
+                   Bib = NA)
+      )
+    )
+  }
   
   
   # Process -----------------------------------------------------------------
@@ -160,11 +178,19 @@ prep_startLatest <- function(conn,
                                                                      wave_time = "5:30:00",
                                                                      `Start time` = seconds_to_hms_simple(900))]
   
+  dt_reg_non_sprint4 <- dt_reg[Distance %in% c("Long Tri", "Long Aquabike"), .(Name, Distance, 
+                                                                     Category  = "All",
+                                                                     Bib,
+                                                                     Wave = "6:00:00",
+                                                                     wave_time = "6:00:00",
+                                                                     `Start time` = seconds_to_hms_simple(dt_timeOffsets$startOffset))]
+  
   dt_reg_non_sprint <- rbindlist(
     list(
       dt_reg_non_sprint1,
       dt_reg_non_sprint2,
-      dt_reg_non_sprint3)
+      dt_reg_non_sprint3,
+      dt_reg_non_sprint4)
   )
   
   
