@@ -1,12 +1,3 @@
-
-
-if(FALSE){
-  conn <- dbConnect(RSQLite::SQLite(), paths$db)
-  
-}
-
-
-
 #' Start time   - character hms after time0 for start - used for webscorer control
 #' Wave         - character label for waves in webscorer, not used for control
 #' wave_time    - character hms display on print sheet, not used for control
@@ -70,7 +61,6 @@ prep_startLatest <- function(conn,
   # start offset ------------------------------------------------------------
   
   
-  # dt_timeOffsets <- data.table(time0 =hm(dt_raceInfo$start_time_change) |> seconds() |> as.integer() )
   dt_timeOffsets <- data.table(time0 = hmToSeconds(dt_raceInfo$start_time_change))
   
   dt_timeOffsets[, startOffset := 21600L - time0] 
@@ -145,8 +135,6 @@ prep_startLatest <- function(conn,
   
   
   # non-sprint distances - this takes bib from registration
-  # dt_reg_non_sprint <- dt_reg[Distance != "Sprint", .(Name, Distance, 
-  
   distances_615 <- c("Tempta", "Swimrun","Aquabike", "Palindrome Aquabike")
   
   dt_reg_non_sprint1 <- dt_reg[Distance %in% distances_615,
@@ -190,7 +178,6 @@ prep_startLatest <- function(conn,
                             Bib,
                             Wave = "6:00:00",
                             wave_time = "6:00:00",
-                            # `Start time` = "0:00:00")]
                             `Start time` = seconds_to_hms_simple(dt_timeOffsets$startOffset))]
   
   
@@ -253,7 +240,6 @@ prep_startLatest <- function(conn,
       dt_reg_non_sprint[, .(Name, Distance, Category, Bib, wave_time)],
       dt_sprint_new[, .(Name, Distance, Category, Bib, wave_time)],
       dt_all_registered_except_non_sprint[, .(Name, Distance, Category, Bib, wave_time)]
-      # dt_always_options[, .(Name, Distance, Category, Bib, Wave, `Start time`)]
     )
   )
   
