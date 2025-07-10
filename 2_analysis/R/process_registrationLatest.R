@@ -145,7 +145,7 @@ prep_startLatest <- function(conn,
                                  wave_time = "6:15:00",
                                  `Start time` = seconds_to_hms_simple(dt_timeOffsets$startOffset + 900))]
   
-  # Double Distancse
+  # Double Distances
   dt_reg_non_sprint2 <- dt_reg[Distance %in% c("Double Sprint"), .(Name, Distance, 
                                                                    Category  = "All",
                                                                    Bib,
