@@ -461,7 +461,7 @@ export default function MemberPlot({ plotData }) {
           </div>
 
           <div style={{ float: "left" }}>
-            Race types
+            Distance
             <SelectButton
               allowEmpty={false}
               value={dataOption}
