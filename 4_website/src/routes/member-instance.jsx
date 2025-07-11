@@ -10,6 +10,7 @@ import PageTitle from "../components/PageTitle";
 import CardStats from "../components/cardstats";
 
 import MemberPlot from "../components/MemberPlot";
+import MemberJointTablePlot from "../components/MemberJointTablePlot";
 
 // title
 
@@ -95,7 +96,10 @@ export default function MemberInstance() {
                   </h2>
                 </span>
               </span>
-              <MemberPlot plotData={member.plot} />
+              <MemberJointTablePlot
+                plotData={member.plot}
+                raceType={member.raceType}
+              />
             </Row>
           ) : (
             ""

@@ -56,8 +56,8 @@ prepJsonMemberData <- function(conn,
   ), by = .(distanceID)]
   dt_distanceParts[, lap := as.character(glue("Lap{lapNumber}", lapNumber = seq(.N))), by = distanceID]
   
-
-    ## members -----------------------------------------------------------------
+  
+  ## members -----------------------------------------------------------------
   
   
   # member list
@@ -149,7 +149,7 @@ prepJsonMemberData <- function(conn,
   dt_timeRangeOptions1 <- dt_timeRangesPrepCombined[season >= "2024-2025" | season=="recent", .(xRangeOptions = list(list(
     label = season_label,
     value = season
-    ))), by = .(id_member, season)]
+  ))), by = .(id_member, season)]
   dt_timeRangeOptions2 <- dt_timeRangeOptions1[, .(xRangeOptions = list(list(xRangeOptions))), by = id_member]
   
   dt_timeRangeOut[dt_timeRangeOptions2, on = .(id_member), xRangeOptions := i.xRangeOptions]
@@ -251,7 +251,6 @@ prepJsonMemberData <- function(conn,
     shapesCancelled = list(dt_cancellations),
     season_ranges = unlist(season_ranges, recursive = FALSE),
     xRangeOptions = unlist(xRangeOptions, recursive = FALSE),
-    raceType = unlist(raceType, recursive = FALSE),
     barData = unlist(barDataList, recursive = FALSE),
     barDataManual = unlist(barDataManualList, recursive = FALSE),
     marshalling = unlist(marshallingList, recursive = FALSE)
@@ -270,7 +269,8 @@ prepJsonMemberData <- function(conn,
   
   dt_membersData[dt_committeePrep, on = .(id_member), `:=`(committee = i.committee)]
   
-  dt_membersData[dt_out_plot, on = .(id_member), `:=`(plot = i.plot)]
+  dt_membersData[dt_out_plot, on = .(id_member), `:=`(plot = i.plot,
+                                                      raceType = i.raceType)]
   
   dt_membersData[, twintownsMembershipID := NULL]
   

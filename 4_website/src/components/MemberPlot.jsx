@@ -128,8 +128,6 @@ const dataEmpty = [
 
 // data variable --------------------------------------------------------
 
-const dataOptionAll = { label: "All", value: "all" };
-
 const offSeasonBase = {
   type: "rect",
   xref: "x",
@@ -160,9 +158,7 @@ const cancellationBase = {
   },
 };
 
-export default function MemberPlot({ plotData }) {
-  const [dataOptions, setDataOptions] = useState([dataOptionAll]);
-  const [dataOption, setDataOption] = useState("all");
+export default function MemberPlot({ plotData, dataOption }) {
   const [dataMember, setDataMember] = useState(dataAlways);
   const [dataUse, setDataUse] = useState(dataAlways);
   const [xRangeOptions, setXRangeOptions] = useState([
@@ -274,26 +270,6 @@ export default function MemberPlot({ plotData }) {
       ? setPlotRange([e["xaxis.range[0]"], e["xaxis.range[1]"]])
       : null;
   }
-
-  // update data displayed
-
-  // update race type options for for person + 'all' option
-  // initial json export isn't auto-unboxed to avoid other problems, so map to get first element of redundant arrays
-  useEffect(() => {
-    const raceTypeProcessed = plotData.raceType[0].map((e) => {
-      return { value: e.value[0], label: e.label[0] };
-    });
-    setDataOptions([dataOptionAll, ...raceTypeProcessed]);
-  }, [plotData]);
-
-  // if switching person and they don't have currently selected distance then set to 'all'
-  useEffect(() => {
-    const haveOption =
-      dataOptions.filter((e) => e.value == dataOption).length == 1;
-    if (!haveOption) {
-      setDataOption("all");
-    }
-  }, [dataOptions]);
 
   // update data based on person
   useEffect(() => {
@@ -457,18 +433,6 @@ export default function MemberPlot({ plotData }) {
               optionValue="value"
               optionLabel="label"
               onChange={(e) => onClickRange(e)}
-            />
-          </div>
-
-          <div style={{ float: "left" }}>
-            Distance
-            <SelectButton
-              allowEmpty={false}
-              value={dataOption}
-              options={dataOptions}
-              optionValue="value"
-              optionLabel="label"
-              onChange={(e) => setDataOption(e.value)}
             />
           </div>
         </span>
