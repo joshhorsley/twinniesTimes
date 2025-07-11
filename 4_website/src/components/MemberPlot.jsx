@@ -250,7 +250,12 @@ export default function MemberPlot({ plotData }) {
 
   useEffect(() => {
     if (plotRangeOption != "other") {
-      if (plotData.season_ranges.hasOwnProperty(plotRangeOption))
+      if (
+        Object.prototype.hasOwnProperty.call(
+          plotData.season_ranges,
+          plotRangeOption
+        )
+      )
         setPlotRange([
           plotData.season_ranges[plotRangeOption][0],
           plotData.season_ranges[plotRangeOption][1],
