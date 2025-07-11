@@ -15,7 +15,11 @@ import MemberJointTablePlot from "../components/MemberJointTablePlot";
 
 const popover = (
   <Popover id="popover-basic">
-    <Popover.Body>Under construction</Popover.Body>
+    <Popover.Body>
+      {" "}
+      Totals races by distance are for all time, individual races listed from
+      2024/25 onwards.
+    </Popover.Body>
   </Popover>
 );
 
@@ -41,7 +45,7 @@ export default function MemberInstance() {
           {/* <Col> */}
           <CardStats
             title="Chip"
-            info="Most recent chip assigned. No result if chip later reassigned."
+            info="Most recent chip assigned. Not displayed if chip later reassigned."
             value={member.chipLatest ? member.chipLatest : "-"}
           />
           {/* </Col> */}
@@ -49,7 +53,7 @@ export default function MemberInstance() {
           {/* <Col> */}
           <CardStats
             title="Sprint+ Races"
-            info="Includes Sprint (previously Full) and Double Sprint events."
+            info="Includes Sprint distance triathlons and longer triathlon events."
             value={member.racesFull ? member.racesFull : "-"}
           >
             <Link to="/total-races">Leaderboard</Link>
@@ -59,7 +63,7 @@ export default function MemberInstance() {
           {member.racesFull != member.racesTotal ? (
             <CardStats
               title="All* Races"
-              info="In addition to Sprint+, this includes Tempta (previously Intermediate), Aquabike, Swimrun, and Teams but records for these are not comprehensive."
+              info="Includes all distances but records are not comprehensive."
               value={member.racesTotal ? member.racesTotal : "-"}
             >
               <Link to="/total-races">Leaderboard</Link>
@@ -88,7 +92,7 @@ export default function MemberInstance() {
               <span>
                 <span>
                   <h2 style={{ display: "inline-block" }}>
-                    {"Races 2024/25 onwards" + " "}
+                    {"Races " + " "}
                     <OverlayTrigger placement="top" overlay={popover}>
                       <span style={{ width: "fit-content" }}>&#9432;</span>
                     </OverlayTrigger>

@@ -5,11 +5,6 @@ import { Link } from "react-router-dom";
 export default function MemberTable({ tabData, dataOption }) {
   return (
     <>
-      <p>
-        Totals races by distance are for all time, individual races listed from
-        2024/25 onwards
-      </p>
-
       <DataTable
         value={tabData.data[dataOption]}
         sortField="date_ymd"
