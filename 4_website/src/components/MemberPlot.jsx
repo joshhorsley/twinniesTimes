@@ -236,11 +236,26 @@ export default function MemberPlot({ plotData }) {
 
   // range changes
   useEffect(() => {
+    var have_option =
+      plotRangeOption == "other" ||
+      plotRangeOption == "recent" ||
+      xRangeOptions.filter((e) => {
+        return e.value == plotRangeOption;
+      }).length == 1;
+
+    if (!have_option) {
+      setPlotRangeOption("recent");
+    }
+  }, [plotData, xRangeOptions]);
+
+  useEffect(() => {
     if (plotRangeOption != "other") {
-      setPlotRange([
-        plotData.season_ranges[plotRangeOption][0],
-        plotData.season_ranges[plotRangeOption][1],
-      ]);
+      if (plotData.season_ranges.hasOwnProperty(plotRangeOption))
+        setPlotRange([
+          plotData.season_ranges[plotRangeOption][0],
+          plotData.season_ranges[plotRangeOption][1],
+        ]);
+      // }
     }
   }, [plotData, plotRangeOption]);
 
