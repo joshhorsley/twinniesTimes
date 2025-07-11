@@ -17,7 +17,7 @@ if(FALSE) {
 prepJsonMemberData <- function(conn,
                                path_source,
                                path_MemberData,
-                               recentSeasons = 2L) {
+                               recentSeasons = 3L) {
   
   
   # Load and common ---------------------------------------------------------
