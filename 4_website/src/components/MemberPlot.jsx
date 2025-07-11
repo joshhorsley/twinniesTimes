@@ -128,11 +128,6 @@ const dataEmpty = [
 
 // data variable --------------------------------------------------------
 
-// const dataOptions = [
-//     {label: "All", value: "all"},
-//     {label: "Sprint", value: "sprint"}
-// ]
-
 const dataOptionAll = { label: "All", value: "all" };
 
 const offSeasonBase = {
@@ -163,11 +158,6 @@ const cancellationBase = {
   line: {
     width: 0,
   },
-  // label: {
-  //     text: "Cancelled",
-  //     textangle: 90,
-  //     font: {size: 10, color: "white"}
-  // }
 };
 
 export default function MemberPlot({ plotData }) {
@@ -179,7 +169,6 @@ export default function MemberPlot({ plotData }) {
     { label: "Recent", value: "recent" },
   ]);
   const [plotRangeOption, setPlotRangeOption] = useState("recent");
-  // const [plotRange, setPlotRange] = useState([xRanges.recent[0], xRanges.recent[1]]);
   const [plotRange, setPlotRange] = useState([
     plotData.season_ranges.recent[0],
     plotData.season_ranges.recent[1],
@@ -248,7 +237,6 @@ export default function MemberPlot({ plotData }) {
   // range changes
   useEffect(() => {
     if (plotRangeOption != "other") {
-      // setPlotRange([xRanges[plotRangeOption][0], xRanges[plotRangeOption][1]])
       setPlotRange([
         plotData.season_ranges[plotRangeOption][0],
         plotData.season_ranges[plotRangeOption][1],
@@ -366,7 +354,6 @@ export default function MemberPlot({ plotData }) {
             y: yDefault,
             base: baseZero,
             text: `${e.distanceDisplay[0]} (Not timed)`,
-            // textposition: "outside",
             marker: {
               color: "white",
               line: {
@@ -456,8 +443,6 @@ export default function MemberPlot({ plotData }) {
           <div style={{ float: "left" }}>
             Race types
             <SelectButton
-              // style={{float: "left"}}
-
               allowEmpty={false}
               value={dataOption}
               options={dataOptions}
@@ -473,7 +458,6 @@ export default function MemberPlot({ plotData }) {
         style={{ width: "100%", height: "500px" }}
         data={dataUse}
         layout={layout}
-        // onRelayout={(e) => console.log(e["xaxis.range[1]"])}
         onRelayout={(e) => onRelayout(e)}
         config={{
           responsive: true,
