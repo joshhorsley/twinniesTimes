@@ -3,10 +3,11 @@ import { Row } from "react-bootstrap";
 import { useEffect, useState } from "react";
 
 import MemberPlot from "./MemberPlot";
+import MemberTable from "./MemberTable";
 
-const dataOptionAll = { label: "All", value: "all" };
+const dataOptionAll = { label: "All/Summary", value: "all" };
 
-export default function MemberJointTablePlot({ plotData, raceType }) {
+export default function MemberJointTablePlot({ plotData, tabData, raceType }) {
   const [dataOption, setDataOption] = useState("all");
   const [dataOptions, setDataOptions] = useState([dataOptionAll]);
 
@@ -42,7 +43,8 @@ export default function MemberJointTablePlot({ plotData, raceType }) {
           />
         </div>
       </Row>
-      <MemberPlot plotData={plotData} dataOption={dataOption} />)
+      <MemberPlot plotData={plotData} dataOption={dataOption} />
+      <MemberTable tabData={tabData} dataOption={dataOption} />
     </>
   );
 }

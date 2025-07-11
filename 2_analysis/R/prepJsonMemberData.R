@@ -234,7 +234,7 @@ prepJsonMemberData <- function(conn,
   dt_marshallingPrep2 <-  dt_marshallingPrep[, .(marshallingList = list(marshalling)), by = .(id_member)]
   
   
-  ## combine -----------------------------------------------------------------
+  # Combine plot ------------------------------------------------------------
   
   
   dt_out_plot <- dt_raceResults[, .(races = .N), by = id_member]
@@ -258,7 +258,41 @@ prepJsonMemberData <- function(conn,
   ))), by = id_member]
   
   
-  # Member data -------------------------------------------------------------
+  # Combine table -----------------------------------------------------------
+  
+  
+  dt_raceResults[dt_distances, on = .(distanceID), distanceDisplay := i.distanceDisplay]
+  
+  # individual races grouped by distance
+  dt_tabPrep1 <- dt_raceResults[season>= "2024-2025", .(
+    tabData = (list(data.table(
+      date_ymd = date_ymd,
+      date_display = toNiceDate(date_ymd),
+      TimeTotal = TimeTotal,
+      TimeTotalDisplay = seconds_to_hms_simple(TimeTotal)))) |> setNames(distanceID)
+    
+  ), by = .(id_member, distanceID)]
+  
+  # summary table
+  dt_tabPrep1.1 <- dt_raceResults[,
+                                  .(total = .N,
+                                    distanceDisplay = distanceDisplay[1]), by = .(id_member, distanceID)][order(-total), .(
+                                    distanceID = "all",
+                                    tabData = (list(data.table(
+                                      total = total,
+                                      distanceDisplay = distanceDisplay))) |> setNames("all")
+                                    
+                                  ), by = .(id_member)]
+  
+  dt_tabPrep1.2 <- rbindlist(list(dt_tabPrep1, dt_tabPrep1.1))
+  
+  dt_tabPrep2 <- dt_tabPrep1.2[, .(tab = list(list(data = tabData |> setNames(distanceID[1:.N]),
+                                                 cols = as.list(distanceID)
+  )
+  )), by = id_member]
+
+  
+  # Export ------------------------------------------------------------------
   
   
   dt_membersData <- copy(dt_members)
@@ -273,6 +307,8 @@ prepJsonMemberData <- function(conn,
                                                       raceType = i.raceType)]
   
   dt_membersData[, twintownsMembershipID := NULL]
+  
+  dt_membersData[dt_tabPrep2, on = .(id_member), tab := i.tab]
   
   
   for(i in seq(nrow(dt_membersData))) {

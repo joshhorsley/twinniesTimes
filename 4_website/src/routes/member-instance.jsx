@@ -97,6 +97,7 @@ export default function MemberInstance() {
               </span>
               <MemberJointTablePlot
                 plotData={member.plot}
+                tabData={member.tab}
                 raceType={member.raceType}
               />
             </Row>
