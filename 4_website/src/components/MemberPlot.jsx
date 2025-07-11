@@ -36,7 +36,6 @@ const layoutBase = {
     ],
     tickvals: [900, 1800, 2700, 3600, 4500, 5400, 6300, 7200, 8100, 9000],
     title: "Time (h:mm)",
-    // dtick: 900
   },
 
   dragmode: "pan",
@@ -194,8 +193,6 @@ export default function MemberPlot({ plotData, dataOption }) {
         ...offSeasonBase,
       };
     });
-
-    // console.log(shapeOutOffseason)
 
     const shapeOutCancellation = plotData.shapesCancelled[0].map((e) => {
       return {
@@ -426,7 +423,6 @@ export default function MemberPlot({ plotData, dataOption }) {
           <div style={{ float: "left", marginRight: "10px" }}>
             Jump to period
             <SelectButton
-              // style={{float: "bottom"}}
               allowEmpty={false}
               value={plotRangeOption}
               options={xRangeOptions}
