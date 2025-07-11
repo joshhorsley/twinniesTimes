@@ -9,7 +9,6 @@ import { Popover, OverlayTrigger } from "react-bootstrap";
 import PageTitle from "../components/PageTitle";
 import CardStats from "../components/cardstats";
 
-import MemberPlot from "../components/MemberPlot";
 import MemberJointTablePlot from "../components/MemberJointTablePlot";
 
 // title
