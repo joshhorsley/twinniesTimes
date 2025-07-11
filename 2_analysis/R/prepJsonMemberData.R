@@ -142,6 +142,18 @@ prepJsonMemberData <- function(conn,
   
   dt_timeRangeOut <- dt_timeRangesPrepCombined[, .(season_ranges = list(c(dateRange) |> setNames(season))), by = id_member]
   
+  # seasons 2024-2025 onwards for dynamic xRangeSelection
+  dt_timeRangesPrepCombined[season=="recent", season_label := "Recent"]
+  dt_timeRangesPrepCombined[season!="recent", season_label := seasonNice(season)]
+  
+  dt_timeRangeOptions1 <- dt_timeRangesPrepCombined[season >= "2024-2025" | season=="recent", .(xRangeOptions = list(list(
+    label = season_label,
+    value = season
+    ))), by = .(id_member, season)]
+  dt_timeRangeOptions2 <- dt_timeRangeOptions1[, .(xRangeOptions = list(list(xRangeOptions))), by = id_member]
+  
+  dt_timeRangeOut[dt_timeRangeOptions2, on = .(id_member), xRangeOptions := i.xRangeOptions]
+  
   
   ## race types ------------------------------------------------------------
   
@@ -227,7 +239,8 @@ prepJsonMemberData <- function(conn,
   
   dt_out_plot <- dt_raceResults[, .(races = .N), by = id_member]
   
-  dt_out_plot[dt_timeRangeOut, on = .(id_member), season_ranges := i.season_ranges]
+  dt_out_plot[dt_timeRangeOut, on = .(id_member), `:=`(season_ranges = i.season_ranges,
+                                                       xRangeOptions = i.xRangeOptions)]
   dt_out_plot[dt_raceTypes2, on = .(id_member), raceType := i.raceType2]
   dt_out_plot[dt_raceDataPrep3, on = .(id_member), barDataList := i.barDataList]
   dt_out_plot[dt_raceDataPrepManual3, on = .(id_member), barDataManualList := i.barDataList]
@@ -237,6 +250,7 @@ prepJsonMemberData <- function(conn,
     shapesOffseason = list(dt_offSeasons[-1]),
     shapesCancelled = list(dt_cancellations),
     season_ranges = unlist(season_ranges, recursive = FALSE),
+    xRangeOptions = unlist(xRangeOptions, recursive = FALSE),
     raceType = unlist(raceType, recursive = FALSE),
     barData = unlist(barDataList, recursive = FALSE),
     barDataManual = unlist(barDataManualList, recursive = FALSE),
