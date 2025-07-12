@@ -100,7 +100,11 @@ export default function RaceInstance() {
           )}
         </Row>
 
-        {race.plot2 ? <RaceJointTablePlot plotData={race.plot2} /> : "no"}
+        {race.plot2 ? (
+          <RaceJointTablePlot plotData={race.plot2} tabData={race.tab2} />
+        ) : (
+          "no"
+        )}
 
         {race.extraNote == "Teams" ? (
           <TableTeamsManual tabData={race.tabData} />

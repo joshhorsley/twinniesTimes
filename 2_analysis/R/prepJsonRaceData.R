@@ -236,15 +236,25 @@ prepJsonRaceData <- function(conn,
   
   # Table - non-teams -------------------------------------------------------
   
-  # 
-  # dt_tablePrep <- data.table::copy(dt_plotPrep)
-  # 
-  # 
-  # dt_tablePrep[, .()]
+
+  dt_tablePrep <- data.table::copy(dt_plotPrep)
+
+
+  dt_tablePrep2 <- dt_tablePrep[, .(catData = list(list(data.table(
+    id_member = id_member,
+    name_display = name_display,
+    TimeTotalDisplay = seconds_to_hms_simple(TimeTotal),
+    Lap1 = seconds_to_hms_simple(Lap1),
+    Lap2 = seconds_to_hms_simple(Lap2),
+    Lap3 = seconds_to_hms_simple(Lap3),
+    Lap4 = seconds_to_hms_simple(Lap4),
+    Lap5 = seconds_to_hms_simple(Lap5)
+  )) |> setNames(Category))), by = .(date_ymd, distanceID, Category)]
   
+  dt_tablePrep3 <- dt_tablePrep2[, .(distData = list(list((unlist(catData,recursive = FALSE))) |> setNames(distanceID))), by = .(date_ymd,distanceID)]
+  dt_tablePrep4 <- dt_tablePrep3[, .(raceData = list(list((unlist(distData,recursive = FALSE))) |> setNames(date_ymd))), by = .(date_ymd)]
   
-  
-  
+
   # Table - Teams -----------------------------------------------------------
   
   
@@ -339,7 +349,8 @@ prepJsonRaceData <- function(conn,
                                           distances = dt_plotPrepDistances[date_ymd==i_date,.(distanceID, distanceDisplay)],
                                           categories = dt_plotPrepCategories[date_ymd==i_date, .(distanceID, Category)],
                                           annotations = dt_annotatopnPrep[date_ymd==i_date, .(distanceID, Category, annotations)],
-                                          layoutAxes = dt_layoutAxes[date_ymd==i_date, .(distanceID, Category, xaxis, racers)])
+                                          layoutAxes = dt_layoutAxes[date_ymd==i_date, .(distanceID, Category, xaxis, racers)]),
+                             tab2 = dt_tablePrep4[date_ymd==i_date]$raceData|> unlist(recursive = FALSE) |> unname() |> unlist(recursive = FALSE)
     )
     )
     

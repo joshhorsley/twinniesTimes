@@ -5,8 +5,9 @@ import { useEffect, useState } from "react";
 import { TabView, TabPanel } from "primereact/tabview";
 
 import RacePlot2 from "./RacePlot2";
+import RaceTable from "./RaceTable";
 
-export default function RaceJointTablePlot({ plotData }) {
+export default function RaceJointTablePlot({ plotData, tabData }) {
   const [distance, setDistance] = useState("sprint");
   const [category, setCategory] = useState("Handicap points");
   const [categoryOptions, setCategoryOptions] = useState();
@@ -83,7 +84,11 @@ export default function RaceJointTablePlot({ plotData }) {
           )}
         </TabPanel>
         <TabPanel header="Table" leftIcon="pi pi-table mr-2">
-          {/* <MemberTable tabData={tabData} dataOption={dataOption} /> */}
+          <RaceTable
+            tabData={tabData}
+            distance={distance}
+            category={category}
+          />
         </TabPanel>
       </TabView>
     </>
