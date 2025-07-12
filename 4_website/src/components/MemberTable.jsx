@@ -57,20 +57,18 @@ export default function MemberTable({ tabData, dataOption }) {
             sortable
           />
         )}
+
         {dataOption != "all" && partsDef && nLaps > 1 && (
           <Column field="Lap2" header={partsDef[1].partDisplay} sortable />
         )}
         {dataOption != "all" && partsDef && nLaps > 2 && (
-          <Column field="Lap2" header={partsDef[2].partDisplay} sortable />
+          <Column field="Lap3" header={partsDef[2].partDisplay} sortable />
         )}
         {dataOption != "all" && partsDef && nLaps > 3 && (
-          <Column field="Lap3" header={partsDef[3].partDisplay} sortable />
+          <Column field="Lap4" header={partsDef[3].partDisplay} sortable />
         )}
         {dataOption != "all" && partsDef && nLaps > 4 && (
-          <Column field="Lap4" header={partsDef[4].partDisplay} sortable />
-        )}
-        {dataOption != "all" && partsDef && nLaps > 5 && (
-          <Column field="Lap5" header={partsDef[5].partDisplay} sortable />
+          <Column field="Lap5" header={partsDef[4].partDisplay} sortable />
         )}
       </DataTable>
     </>
