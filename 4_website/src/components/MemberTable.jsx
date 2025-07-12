@@ -3,20 +3,17 @@ import { DataTable } from "primereact/datatable";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
+import partsDefAll from "../data/partsDef.json";
+
 export default function MemberTable({ tabData, dataOption }) {
   const [partsDef, setPartsDef] = useState();
   const [nLaps, setNLaps] = useState(1);
 
   useEffect(() => {
-    dataOption != "all" &&
-      setPartsDef(tabData.list_partsDef[0][0].partsDef[dataOption]);
-    dataOption != "all" &&
-      setNLaps(tabData.list_partsDef[0][0].nLaps[dataOption][0]);
+    dataOption != "all" && setPartsDef(partsDefAll.partsDef[dataOption]);
+    dataOption != "all" && setNLaps(partsDefAll.nLaps[dataOption][0]);
   }, [tabData, dataOption]);
 
-  // console.log(tabData.list_partsDef[0][0].partsDef);
-  console.log(partsDef);
-  console.log(nLaps);
   return (
     <>
       {dataOption == "all" && <p>Distance totals for 2018/19 onwards</p>}

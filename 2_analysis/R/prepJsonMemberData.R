@@ -74,6 +74,11 @@ prepJsonMemberData <- function(conn,
     partsDef = dt_distanceDefs$distanceDef |> setNames(dt_distanceDefs$distanceID),
     nLaps = as.list(dt_distanceDefs$nLaps)  |> setNames(dt_distanceDefs$distanceID)
   )
+  
+  path_partsDef <- file.path(path_source, "partsDef.json")
+  
+  toJSON(list_partsDef) |> 
+    write(path_partsDef)
 
   
   ## members -----------------------------------------------------------------
@@ -319,8 +324,7 @@ prepJsonMemberData <- function(conn,
   dt_tabPrep1.2 <- rbindlist(list(dt_tabPrep1, dt_tabPrep1.1))
   
   dt_tabPrep2 <- dt_tabPrep1.2[, .(tab = list(list(data = tabData |> setNames(distanceID[1:.N]),
-                                                   cols = as.list(distanceID),
-                                                   list_partsDef = list(list(list_partsDef))
+                                                   cols = as.list(distanceID)
   )
   )), by = id_member]
   
