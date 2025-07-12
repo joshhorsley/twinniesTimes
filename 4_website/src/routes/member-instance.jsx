@@ -17,8 +17,8 @@ const popover = (
   <Popover id="popover-basic">
     <Popover.Body>
       {" "}
-      Totals races by distance are for all time, individual races listed from
-      2024/25 onwards.
+      Totals races by distance for 2018/19 onwards, individual races results
+      from 2024/25 onwards.
     </Popover.Body>
   </Popover>
 );

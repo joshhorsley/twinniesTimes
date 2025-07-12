@@ -46,6 +46,8 @@ export default function MemberJointTablePlot({ plotData, tabData, raceType }) {
       </Row>
       <TabView renderActiveOnly={false}>
         <TabPanel header="Graph" leftIcon="pi pi-chart-bar mr-2">
+          <p>Races plotted 2024/25 onwards</p>
+
           {plotData && (
             <MemberPlot plotData={plotData} dataOption={dataOption} />
           )}

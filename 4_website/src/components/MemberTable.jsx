@@ -19,6 +19,8 @@ export default function MemberTable({ tabData, dataOption }) {
   console.log(nLaps);
   return (
     <>
+      {dataOption == "all" && <p>Distance totals for 2018/19 onwards</p>}
+      {dataOption != "all" && <p>Races 2024/25 onwards</p>}
       <DataTable
         value={tabData.data[dataOption]}
         sortField="date_ymd"
