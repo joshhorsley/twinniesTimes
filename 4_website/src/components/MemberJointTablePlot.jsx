@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 
 import MemberPlot from "./MemberPlot";
 import MemberTable from "./MemberTable";
+import { TabView, TabPanel } from "primereact/tabview";
 
 const dataOptionAll = { label: "All/Summary", value: "all" };
 
@@ -43,8 +44,16 @@ export default function MemberJointTablePlot({ plotData, tabData, raceType }) {
           />
         </div>
       </Row>
-      <MemberPlot plotData={plotData} dataOption={dataOption} />
-      <MemberTable tabData={tabData} dataOption={dataOption} />
+      <TabView renderActiveOnly={false}>
+        <TabPanel header="Graph" leftIcon="pi pi-chart-bar mr-2">
+          {plotData && (
+            <MemberPlot plotData={plotData} dataOption={dataOption} />
+          )}
+        </TabPanel>
+        <TabPanel header="Table" leftIcon="pi pi-table mr-2">
+          <MemberTable tabData={tabData} dataOption={dataOption} />
+        </TabPanel>
+      </TabView>
     </>
   );
 }
