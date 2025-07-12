@@ -274,12 +274,18 @@ prepJsonMemberData <- function(conn,
   ), by = .(id_member, distanceID)]
   
   # summary table
-  dt_tabPrep1.1 <- dt_raceResults[,
-                                  .(total = .N,
-                                    distanceDisplay = distanceDisplay[1]), by = .(id_member, distanceID)][order(-total), .(
+  dt_tabPrepSummary <- dt_totalRacesOverall[id_member %in% dt_raceResults$id_member] |> 
+    melt.data.table(id.vars = "id_member", variable.name = "distanceID",value.name = "total")
+  
+  dt_tabPrepSummary[dt_distances, on = .(distanceID), distanceDisplay := i.distanceDisplay]
+
+  
+  
+  dt_tabPrep1.1 <- dt_tabPrepSummary[!is.na(total)][total > 0 & distanceID %notin% c("races_full", "races_all")][order(-total), .(
                                     distanceID = "all",
                                     tabData = (list(data.table(
                                       total = total,
+                                      distanceID = distanceID,
                                       distanceDisplay = distanceDisplay))) |> setNames("all")
                                     
                                   ), by = .(id_member)]
