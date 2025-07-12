@@ -37,6 +37,8 @@ prepJsonMemberData <- function(conn,
   
   dt_marshalling <- dt_dbReadTable(conn, "marshalling")
   
+  dt_distances <- dt_dbReadTable(conn, "distances")
+  
   
   # Recent ------------------------------------------------------------------
   
@@ -44,18 +46,35 @@ prepJsonMemberData <- function(conn,
   dt_memberRecent <- dt_raceResults[, .(memberRecent = max(season) >= seasonRecentCutoff), by = .(id_member)]
   
   
-  ## total races -------------------------------------------------------------
+  # Distance parts ----------------------------------------------------------
   
-  
-  dt_distances <- dt_dbReadTable(conn, "distances")
-  
-  dt_distanceParts <- dt_distances # remove this?
   
   dt_distanceParts <- dt_distances[, .(
     part = trimws(unlist(strsplit(parts,split = ";")))
-  ), by = .(distanceID)]
+  ), by = .(distanceID, distanceDisplay)]
   dt_distanceParts[, lap := as.character(glue("Lap{lapNumber}", lapNumber = seq(.N))), by = distanceID]
   
+  dt_distanceParts[, partCountbyDistance := seq(.N), by = .(distanceID, part)]
+  dt_distanceParts[, hasRepeatedParts := any(partCountbyDistance > 1), by = .(distanceID, part)]
+  dt_distanceParts[, partDisplay := ifelse(hasRepeatedParts,
+                                           glue("{part} {partCountbyDistance}",
+                                                part = tools::toTitleCase(part),
+                                                partCountbyDistance = partCountbyDistance),
+                                           tools::toTitleCase(part))]
+  
+  # export for table
+  dt_distanceDefs <- dt_distanceParts[, .(distanceDef = (list(data.table(
+    partDisplay = partDisplay,
+    lap = lap
+  ))) |> setNames(distanceDisplay[1]) ,
+  nLaps = .N
+  ), by = .(distanceID,distanceDisplay)]
+  
+  list_partsDef <- list(
+    partsDef = dt_distanceDefs$distanceDef |> setNames(dt_distanceDefs$distanceID),
+    nLaps = as.list(dt_distanceDefs$nLaps)  |> setNames(dt_distanceDefs$distanceID)
+  )
+
   
   ## members -----------------------------------------------------------------
   
@@ -269,7 +288,14 @@ prepJsonMemberData <- function(conn,
       date_ymd = date_ymd,
       date_display = toNiceDate(date_ymd),
       TimeTotal = TimeTotal,
-      TimeTotalDisplay = seconds_to_hms_simple(TimeTotal)))) |> setNames(distanceID)
+      TimeTotalDisplay = seconds_to_hms_simple(TimeTotal),
+      Lap1 = seconds_to_hms_simple(Lap1),
+      Lap2 = seconds_to_hms_simple(Lap2),
+      Lap3 = seconds_to_hms_simple(Lap3),
+      Lap4 = seconds_to_hms_simple(Lap4),
+      Lap5 = seconds_to_hms_simple(Lap5)
+      
+    ))) |> setNames(distanceID)
     
   ), by = .(id_member, distanceID)]
   
@@ -278,25 +304,26 @@ prepJsonMemberData <- function(conn,
     melt.data.table(id.vars = "id_member", variable.name = "distanceID",value.name = "total")
   
   dt_tabPrepSummary[dt_distances, on = .(distanceID), distanceDisplay := i.distanceDisplay]
-
+  
   
   
   dt_tabPrep1.1 <- dt_tabPrepSummary[!is.na(total)][total > 0 & distanceID %notin% c("races_full", "races_all")][order(-total), .(
-                                    distanceID = "all",
-                                    tabData = (list(data.table(
-                                      total = total,
-                                      distanceID = distanceID,
-                                      distanceDisplay = distanceDisplay))) |> setNames("all")
-                                    
-                                  ), by = .(id_member)]
+    distanceID = "all",
+    tabData = (list(data.table(
+      total = total,
+      distanceID = distanceID,
+      distanceDisplay = distanceDisplay))) |> setNames("all")
+    
+  ), by = .(id_member)]
   
   dt_tabPrep1.2 <- rbindlist(list(dt_tabPrep1, dt_tabPrep1.1))
   
   dt_tabPrep2 <- dt_tabPrep1.2[, .(tab = list(list(data = tabData |> setNames(distanceID[1:.N]),
-                                                 cols = as.list(distanceID)
+                                                   cols = as.list(distanceID),
+                                                   list_partsDef = list(list(list_partsDef))
   )
   )), by = id_member]
-
+  
   
   # Export ------------------------------------------------------------------
   
@@ -316,8 +343,8 @@ prepJsonMemberData <- function(conn,
   
   dt_membersData[dt_tabPrep2, on = .(id_member), tab := i.tab]
   
-  
-  for(i in seq(nrow(dt_membersData))) {
+
+    for(i in seq(nrow(dt_membersData))) {
     
     path_save <- file.path(
       path_MemberData,
