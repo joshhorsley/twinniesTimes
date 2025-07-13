@@ -421,7 +421,7 @@ export default function MemberPlot({ plotData, dataOption }) {
       <Row>
         <span>
           <div style={{ float: "left", marginRight: "10px" }}>
-            Jump to period
+            Jump to period or drag graph to scroll
             <SelectButton
               allowEmpty={false}
               value={plotRangeOption}
