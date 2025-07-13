@@ -3,6 +3,8 @@ import { DataTable } from "primereact/datatable";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
+import { PopoverBody, Popover, OverlayTrigger } from "react-bootstrap";
+
 import partsDefAll from "../data/partsDef.json";
 
 export default function RaceTable({ tabData, distance, category }) {
@@ -44,6 +46,57 @@ export default function RaceTable({ tabData, distance, category }) {
           }}
         />
         <Column field="TimeTotalDisplay" header="Time (total)" sortable />
+        {tabDataUse && Object.hasOwn(tabDataUse[0], "timeDiff") && (
+          <Column
+            field="timeDiff"
+            header={
+              <OverlayTrigger
+                placement="top"
+                overlay={
+                  <Popover>
+                    <PopoverBody>
+                      {"Negative value indicates beating handicap time"}
+                    </PopoverBody>
+                  </Popover>
+                }
+              >
+                <span>
+                  {"Handicap compare"}
+                  <br></br>
+                  {"(seconds)" + " "} &#9432;
+                </span>
+              </OverlayTrigger>
+            }
+            sortable
+          />
+        )}
+        {tabDataUse &&
+          Object.hasOwn(tabDataUse[0], "points_handicap_awarded") && (
+            <Column
+              field="points_handicap_awarded"
+              header={
+                <OverlayTrigger
+                  placement="top"
+                  overlay={
+                    <Popover>
+                      <PopoverBody>
+                        {
+                          "Handicap points not awarded in 'Non-handicapped' Category. See the Points tab on this page for a breakdown of all points awarded."
+                        }
+                      </PopoverBody>
+                    </Popover>
+                  }
+                >
+                  <span>
+                    {"Handicap points"}
+                    <br></br>
+                    {"awarded" + " "} &#9432;
+                  </span>
+                </OverlayTrigger>
+              }
+              sortable
+            />
+          )}
         {distance != "teams" && partsDef && (
           <Column field="Lap1" header={partsDef[0].partDisplay} sortable />
         )}

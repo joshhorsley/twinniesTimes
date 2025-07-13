@@ -265,7 +265,9 @@ prepJsonRaceData <- function(conn,
     Lap2 = seconds_to_hms_simple(Lap2),
     Lap3 = seconds_to_hms_simple(Lap3),
     Lap4 = seconds_to_hms_simple(Lap4),
-    Lap5 = seconds_to_hms_simple(Lap5)
+    Lap5 = seconds_to_hms_simple(Lap5),
+    timeDiff = {if(!all(is.na(timeDiff)))  timeDiff},
+    points_handicap_awarded = {if(!all(is.na(points_handicap_awarded)))  points_handicap_awarded}
   )) |> setNames(Category))), by = .(date_ymd, distanceID, Category)]
   
   dt_tablePrep3 <- dt_tablePrep2[, .(distData = list(list((unlist(catData,recursive = FALSE))) |> setNames(distanceID))), by = .(date_ymd,distanceID)]
