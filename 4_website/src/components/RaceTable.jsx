@@ -33,7 +33,7 @@ export default function RaceTable({ tabData, distance, category }) {
         stripedRows
         scrollable
       >
-        <Column field="rankTotal" header="Rank" />
+        <Column field="rankTotal" header="Rank" sortable />
         <Column
           field="id_member"
           header="Name"
