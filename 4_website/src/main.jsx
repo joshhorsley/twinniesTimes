@@ -72,8 +72,6 @@ import Races, { loader as racesRootLoader } from "./routes/races-root";
 import { raceLoader } from "./races";
 import RaceInstance from "./routes/race-instance";
 
-// import RaceIndex from './routes/races-index';
-
 // Other -----------------------------------
 
 import ClubStats from "./routes/club-stats";
@@ -172,13 +170,6 @@ const router = createBrowserRouter(
             loader={pointsLoader}
             errorElement={<ErrorPage />}
           ></Route>
-
-          {/* <Route
-            path ="/points/:raceId"
-            element={<PointsInstance />}
-            loader={raceLoader}
-            errorElement={<ErrorPage />}>
-          </Route> */}
         </Route>
         {/* Total Races -------------------------------------------------------*/}
         <Route
@@ -203,13 +194,6 @@ const router = createBrowserRouter(
             loader={totalRacesLoader}
             errorElement={<ErrorPage />}
           ></Route>
-
-          {/* <Route
-            path ="/points/:raceId"
-            element={<PointsInstance />}
-            loader={raceLoader}
-            errorElement={<ErrorPage />}>
-          </Route> */}
         </Route>
         {/* Start times -------------------------------------------------------*/}
         <Route path="/start-times" element={<StartTimes />} />
