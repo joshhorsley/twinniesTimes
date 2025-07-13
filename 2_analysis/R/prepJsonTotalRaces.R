@@ -13,8 +13,6 @@ prepJsonTotalRaces <- function(conn, path_source) {
     toNiceDate()
   
   
-  
-  
   # Prep --------------------------------------------------------------------
   
   
@@ -39,8 +37,6 @@ prepJsonTotalRaces <- function(conn, path_source) {
   
   dt_cols[dt_totalDistanceNotes, on = .(columnID = name), note := i.value]
   
-  # dt_cols[, freeze := columnID == "name_dispaly"]
-  
   cols_use <- c("id_member",dt_cols$columnID)
   
   
@@ -53,10 +49,8 @@ prepJsonTotalRaces <- function(conn, path_source) {
     colsUse = dt_cols[columnID != "name_display"]
   )
   
-  
   list_export |> 
   jsonlite::toJSON() |>
     write(file.path(path_source, "totalRaces.json"))
-  
   
 }

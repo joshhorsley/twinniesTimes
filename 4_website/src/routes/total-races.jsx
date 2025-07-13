@@ -10,12 +10,6 @@ import { useState } from "react";
 
 import { FilterMatchMode } from "primereact/api";
 
-// import { InputText } from 'primereact/inputtext';
-// import { IconField } from 'primereact/iconfield';
-// import { InputIcon } from 'primereact/inputicon';
-
-// import {  } from 'react';
-
 import PageTitle from "../components/PageTitle";
 
 import { Popover, OverlayTrigger } from "react-bootstrap";
@@ -37,26 +31,9 @@ export default function TotalRaces() {
     setGlobalFilterValue(value);
   };
 
-  // const clearFilter = () => {
-
-  //     const value = "";
-  //     let _filters = { ...filters };
-
-  //     _filters['global'].value = value;
-
-  //     setFilters(_filters);
-  //     setGlobalFilterValue(value);
-
-  // }
-
   const renderHeader = () => {
     return (
       <div>
-        {/* <InputText
-                       spellCheck="false"
-                       autoCorrect="off"
-                           className='inputSearchTable'
-                           value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Search by name" /> */}
         <Form id="search-form" role="search">
           <input
             id="qTab"
@@ -64,14 +41,12 @@ export default function TotalRaces() {
             type="search"
             value={globalFilterValue}
             onChange={onGlobalFilterChange}
-            // className={searching ? "loading" : ""}
             spellCheck="false"
             aria-label="Search by name"
             placeholder="Search by name"
           />
           <div className="sr-only" aria-live="polite"></div>
         </Form>
-        {/* <button onClick={() => clearFilter()}>Clear</button> */}
       </div>
     );
   };
@@ -91,8 +66,6 @@ export default function TotalRaces() {
 
           <DataTable
             value={dataTotalRaces.totalData}
-            // className='p-datatable-customers stickyTable'
-
             size="small"
             // for search
             filters={filters}
@@ -103,18 +76,10 @@ export default function TotalRaces() {
             sortField="races_full"
             sortOrder={-1}
             stripedRows
-            // showGridlines not working?
-            // tableStyle={{ minWidth: '50rem' }}
-
             paginator
-            // paginatorPosition="top"
             rows={25}
             rowsPerPageOptions={[5, 10, 25, 50]}
-            // stateStorage="session"
-            // stateKey="dt-state-total-races"
-
-            scrollable // this is needed for frozen columns
-            // scrollHeight="400px"
+            scrollable
           >
             {/* Name */}
             <Column
@@ -163,9 +128,6 @@ export default function TotalRaces() {
                 }
               />
             ))}
-
-            {/* <Column field="races_full" header="Sprint+" sortable/> */}
-            {/* <Column field="total" header="All Races*" sortable/> */}
           </DataTable>
         </Container>
       </div>
