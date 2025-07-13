@@ -50,12 +50,12 @@ export default function PointsRules({ season }) {
           <ul>
             <li>15 points per Sprint race</li>
             <li>
-              30 points per Double Sprint, Long Tri, Palindrome Tri race, or
-              other special events
+              30 points per Teams, Double Sprint, Long Tri, Palindrome Tri race,
+              or other special events
             </li>
             <li>
               30 points per marshaling for first two occassions per season, 15
-              points for all subsequent in season
+              points for all subsequent occassions in season
             </li>
           </ul>
 
