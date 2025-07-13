@@ -397,7 +397,7 @@ prepJsonRaceData <- function(conn,
     )
     
     json_prep <- list_export |> 
-      toJSON(pretty = TRUE)
+      toJSON(pretty = FALSE)
     
     write(json_prep, file.path(path_raceData, glue("{i_date}.json", i_date = i_date)))
     

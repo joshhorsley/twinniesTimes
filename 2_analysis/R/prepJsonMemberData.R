@@ -357,7 +357,7 @@ prepJsonMemberData <- function(conn,
     
     
     dt_membersData[i] |> 
-      jsonlite::toJSON(na = "null", pretty = TRUE
+      jsonlite::toJSON(na = "null", pretty = FALSE
       ) |> 
       write(path_save)
   }
