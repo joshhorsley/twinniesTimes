@@ -49,6 +49,7 @@ export default function RaceTable({ tabData, distance, category }) {
         {tabDataUse && Object.hasOwn(tabDataUse[0], "timeDiff") && (
           <Column
             field="timeDiff"
+            body={(data) => data.timeDiffDisplay}
             header={
               <OverlayTrigger
                 placement="top"

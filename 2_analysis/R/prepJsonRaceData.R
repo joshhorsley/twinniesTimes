@@ -267,6 +267,7 @@ prepJsonRaceData <- function(conn,
     Lap4 = seconds_to_hms_simple(Lap4),
     Lap5 = seconds_to_hms_simple(Lap5),
     timeDiff = {if(!all(is.na(timeDiff)))  timeDiff},
+    timeDiffDisplay = {if(!all(is.na(timeDiff)))  glue("{plus}{timeDiff}", plus=ifelse(timeDiff>0,"+",""), timeDiff = timeDiff)},
     points_handicap_awarded = {if(!all(is.na(points_handicap_awarded)))  points_handicap_awarded}
   )) |> setNames(Category))), by = .(date_ymd, distanceID, Category)]
   
