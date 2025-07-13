@@ -36,8 +36,16 @@ import Header from "./navbar";
 
 import Home from "./routes/home";
 
-import TotalRaces from "./routes/total-races";
 import StartTimes from "./routes/start-times";
+
+// Total races -----------------------------------
+
+import TotalRacesRoot, {
+  loader as totalRacesRootLoader,
+} from "./routes/total-races-root";
+
+import { totalRacesLoader } from "./total-races";
+import TotalRacesInstance from "./routes/total-races-instanace";
 
 // Points -----------------------------------
 
@@ -173,7 +181,33 @@ const router = createBrowserRouter(
           </Route> */}
         </Route>
         {/* Total Races -------------------------------------------------------*/}
-        <Route path="/total-races" element={<TotalRaces />} />
+        <Route
+          exact
+          path="/total-races"
+          element={<TotalRacesRoot />}
+          loader={totalRacesRootLoader}
+          errorElement={<ErrorPage />}
+        >
+          {dataMain.latestRace.date_ymd ? (
+            <Route index element={<Navigate to={`/total-races/${"all"}`} />} />
+          ) : (
+            ""
+          )}
+
+          <Route
+            path="/total-races/:totalRacesSeasonId"
+            element={<TotalRacesInstance />}
+            loader={totalRacesLoader}
+            errorElement={<ErrorPage />}
+          ></Route>
+
+          {/* <Route
+            path ="/points/:raceId"
+            element={<PointsInstance />}
+            loader={raceLoader}
+            errorElement={<ErrorPage />}>
+          </Route> */}
+        </Route>
         {/* Start times -------------------------------------------------------*/}
         <Route path="/start-times" element={<StartTimes />} />
         <Route

@@ -1,4 +1,4 @@
-prepJsonTotalRaces <- function(conn, path_source) {
+prepJsonTotalRaces <- function(conn, path_source, path_totalRacesData) {
   
   
   
@@ -11,6 +11,20 @@ prepJsonTotalRaces <- function(conn, path_source) {
   
   dateUpdated <- dbGetQuery(conn, "SELECT MAX(date_ymd) AS dateMax FROM raceResults")$dateMax |> 
     toNiceDate()
+  
+  # Point Seasons list ------------------------------------------------------
+  
+  
+  dt_seasonList <- data.table(season = "all", season_display = "All")
+  
+  setorder(dt_seasonList, -season)
+  
+  # race list flat
+  path_totalRacesSeasonList <- file.path(path_source, "totalRacesSeasonList.json")
+  
+  dt_seasonList |> 
+    toJSON() |> 
+    write(path_totalRacesSeasonList)
   
   
   # Prep --------------------------------------------------------------------
@@ -46,11 +60,13 @@ prepJsonTotalRaces <- function(conn, path_source) {
   list_export <- list(
     dateUpdated = dateUpdated,
     totalData = dt_totalRacesOverall[order(-races_full), ..cols_use],
-    colsUse = dt_cols[columnID != "name_display"]
+    colsUse = dt_cols[columnID != "name_display"],
+    season = "all",
+    season_display = "All Seasons"
   )
   
   list_export |> 
   jsonlite::toJSON() |>
-    write(file.path(path_source, "totalRaces.json"))
+    write(file.path(path_totalRacesData, "all.json"))
   
 }

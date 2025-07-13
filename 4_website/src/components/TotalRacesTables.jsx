@@ -3,14 +3,13 @@ import { Column } from "primereact/column";
 
 import { Form } from "react-router-dom";
 
-import dataTotalRaces from "../data/totalRaces.json";
 import { PopoverBody, Popover, OverlayTrigger } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 
 import { FilterMatchMode } from "primereact/api";
 
-export default function TotalRacesTable({ tabDataList }) {
+export default function TotalRacesTable({ dataTotalRaces }) {
   const [filters, setFilters] = useState({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
   });
