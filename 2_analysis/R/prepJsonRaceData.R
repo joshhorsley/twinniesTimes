@@ -70,7 +70,15 @@ prepJsonRaceData <- function(conn,
   dt_racesList[is.na(haveTable),  haveTable := FALSE]
   
   
-  # Prep --------------------------------------------------------------------
+  # Points changes ----------------------------------------------------------
+  
+  
+  dt_bestPoints[, rankIsEqual := .N>1, by = .(date_ymd, season, rank_all_total)]
+  
+  dt_bestPoints[, points_all_total_previous := shift(points_all_total), by = .(id_member, season)]
+  dt_bestPoints[, rank_all_total_previous := shift(rank_all_total), by = .(id_member, season)]
+  dt_bestPoints[, rankIsEqual_previous := shift(rankIsEqual), by = .(id_member, season)]
+  
   
   
   ## 2024-2025 Regular races -------------------------------------------------
@@ -149,7 +157,15 @@ prepJsonRaceData <- function(conn,
               on = .(id_member, date_ymd),
               `:=`(timeBestPrevious = i.timeBestPreviousUse,
                    timeDiff = i.timeDiff,
-                   points_handicap_awarded = i.points_handicap_awarded)]
+                   points_handicap_awarded = i.points_handicap_awarded,
+                   points_participation_awarded = i.points_participation_awarded,
+                   points_all_awarded = i.points_all_awarded,
+                   points_all_total = i.points_all_total,
+                   points_all_total_previous = i.points_all_total_previous,
+                   rank_all_total = i.rank_all_total,
+                   rank_all_total_previous = i.rank_all_total_previous,
+                   rankIsEqual = i.rankIsEqual,
+                   rankIsEqual_previous = i.rankIsEqual_previous)]
   
   dt_plotPrep[dt_distancePartsSummary, on = .(distanceID), `:=`(lapSplit = i.lapSplit,
                                                                 varsUse = i.varsUse,
@@ -218,8 +234,8 @@ prepJsonRaceData <- function(conn,
   
   
   # Annotations -------------------------------------------------------------
-
-    
+  
+  
   dt_plotPrep[, points_handicap_display := ifelse(is.na(points_handicap_awarded), 0, points_handicap_awarded)]
   
   dt_annotatopnPrep <- dt_plotPrep[, .(annotations = list(list(
@@ -236,10 +252,10 @@ prepJsonRaceData <- function(conn,
   
   # Table - non-teams -------------------------------------------------------
   
-
+  
   dt_tablePrep <- data.table::copy(dt_plotPrep)
-
-
+  
+  
   dt_tablePrep2 <- dt_tablePrep[, .(catData = list(list(data.table(
     id_member = id_member,
     name_display = name_display,
@@ -255,7 +271,27 @@ prepJsonRaceData <- function(conn,
   dt_tablePrep3 <- dt_tablePrep2[, .(distData = list(list((unlist(catData,recursive = FALSE))) |> setNames(distanceID))), by = .(date_ymd,distanceID)]
   dt_tablePrep4 <- dt_tablePrep3[, .(raceData = list(list((unlist(distData,recursive = FALSE))) |> setNames(date_ymd))), by = .(date_ymd)]
   
-
+  
+  
+  # Points table ------------------------------------------------------------
+  
+  
+  dt_pointsTablePrep <- dt_plotPrep[points_all_awarded!=0, .(pointsData = (list(data.table(
+    id_member = id_member,
+    name_display = name_display,
+    points_all_total_previous = {if(!all(is.na(points_all_total_previous))) points_all_total_previous},
+    rank_all_total_previousDisplay = {if(!all(is.na(points_all_total_previous)))  ordinal_suffix_of(rank_all_total_previous)},
+    points_handicap_awarded = points_handicap_awarded,
+    points_participation_awarded = points_participation_awarded,
+    points_all_awarded = points_all_awarded,
+    points_all_total = points_all_total,
+    rank_all_total= rank_all_total,
+    rank_all_totalDisplay = ordinal_suffix_of(rank_all_total),
+    rankIsEqual = rankIsEqual,
+    rankIsEqual_previous = {if(!all(is.na(points_all_total_previous)))  rankIsEqual_previous}
+  )))), by = .(date_ymd)]  
+  
+  
   # Table - Teams -----------------------------------------------------------
   
   
@@ -337,6 +373,8 @@ prepJsonRaceData <- function(conn,
     
     list_export <- list(list(date_ymd = i_date,
                              date_display = dt_racesList[i]$date_display,
+                             season = dt_racesList[i]$season,
+                             season_display = dt_racesList[i]$season_display,
                              extraNote = dt_racesList[i]$extraNote,
                              
                              raceStats = dt_race_stats[date_ymd==i_date] |> as.list(),
@@ -351,7 +389,8 @@ prepJsonRaceData <- function(conn,
                                           categories = dt_plotPrepCategories[date_ymd==i_date, .(distanceID, Category)],
                                           annotations = dt_annotatopnPrep[date_ymd==i_date, .(distanceID, Category, annotations)],
                                           layoutAxes = dt_layoutAxes[date_ymd==i_date, .(distanceID, Category, xaxis, racers)]),
-                             tab2 = dt_tablePrep4[date_ymd==i_date]$raceData|> unlist(recursive = FALSE) |> unname() |> unlist(recursive = FALSE)
+                             tab2 = dt_tablePrep4[date_ymd==i_date]$raceData|> unlist(recursive = FALSE) |> unname() |> unlist(recursive = FALSE),
+                             pointsTab = dt_pointsTablePrep[date_ymd==i_date]$pointsData
     )
     )
     

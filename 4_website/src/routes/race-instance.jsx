@@ -9,6 +9,8 @@ import { Container, Row } from "react-bootstrap";
 import PageTitle from "../components/PageTitle";
 import CardStats from "../components/cardstats";
 import RaceJointTablePlot from "../components/RaceJointTablePlot";
+import { TabPanel, TabView } from "primereact/tabview";
+import RacePointsTable from "../components/RacePointsTable";
 
 // Component ------------------------------------------------
 
@@ -89,13 +91,30 @@ export default function RaceInstance() {
           )}
         </Row>
 
-        {race.plot2 && (
-          <RaceJointTablePlot
-            plotData={race.plot2}
-            tabData={race.tab2}
-            tabDataTeams={race.tabData}
-          />
-        )}
+        <TabView renderActiveOnly={false}>
+          <TabPanel header="Points">
+            {race.pointsTab && (
+              <>
+                <span>
+                  View{" "}
+                  <Link to={`/points/${race.season}`}>
+                    {`Points Leaderboard for ${race.season_display} season`}
+                  </Link>
+                </span>
+                <RacePointsTable pointsTab={race.pointsTab} />
+              </>
+            )}
+          </TabPanel>
+          <TabPanel header="Results">
+            {race.plot2 && (
+              <RaceJointTablePlot
+                plotData={race.plot2}
+                tabData={race.tab2}
+                tabDataTeams={race.tabData}
+              />
+            )}
+          </TabPanel>
+        </TabView>
       </Container>
     </>
   );
