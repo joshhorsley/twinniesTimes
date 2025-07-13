@@ -49,18 +49,14 @@ prepJsonTotalRaces <- function(conn, path_source) {
   
   list_export <- list(
     dateUpdated = dateUpdated,
-    totalData = dt_totalRacesOverall[order(-races_full), ..cols_use]
+    totalData = dt_totalRacesOverall[order(-races_full), ..cols_use],
+    colsUse = dt_cols[columnID != "name_display"]
   )
   
   
   list_export |> 
   jsonlite::toJSON() |>
     write(file.path(path_source, "totalRaces.json"))
-  
-  
-  dt_cols[columnID != "name_display"] |> 
-    jsonlite::toJSON() |> 
-    write(file.path(path_source, "totalRaces_columns.json"))
   
   
 }
