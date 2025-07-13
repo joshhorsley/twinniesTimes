@@ -28,7 +28,7 @@ export default function RaceInstance() {
         </h1>
 
         <Row>
-          {race.marshalling.length ? (
+          {race.marshalling.length && (
             <CardStats title="Thanks to Marshals">
               <ul>
                 {race.marshalling.map((e) => {
@@ -42,11 +42,9 @@ export default function RaceInstance() {
                 })}
               </ul>
             </CardStats>
-          ) : (
-            ""
           )}
 
-          {race.newcomers.length ? (
+          {race.newcomers.length && (
             <CardStats title="First Timers">
               <ul>
                 {race.newcomers.map((e) => {
@@ -60,11 +58,9 @@ export default function RaceInstance() {
                 })}
               </ul>
             </CardStats>
-          ) : (
-            ""
           )}
 
-          {race.milestones.length ? (
+          {race.milestones.length && (
             <CardStats title="Milestones">
               <ul>
                 {race.milestones.map((e) => {
@@ -79,34 +75,26 @@ export default function RaceInstance() {
                 })}
               </ul>
             </CardStats>
-          ) : (
-            ""
           )}
 
-          {race.raceStats.n_entered ? (
+          {race.raceStats.n_entered && (
             <CardStats title="Finishers" value={race.raceStats.n_entered} />
-          ) : (
-            ""
           )}
-          {race.raceStats.n_handicapAwards ? (
+          {race.raceStats.n_handicapAwards && (
             <CardStats
               title="Handicaps Points"
               value={race.raceStats.n_handicapAwards}
               valueText="racers"
             />
-          ) : (
-            ""
           )}
         </Row>
 
-        {race.plot2 ? (
+        {race.plot2 && (
           <RaceJointTablePlot
             plotData={race.plot2}
             tabData={race.tab2}
             tabDataTeams={race.tabData}
           />
-        ) : (
-          "no"
         )}
       </Container>
     </>
