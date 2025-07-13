@@ -7,7 +7,6 @@ import { Container, Row } from "react-bootstrap";
 // import components ------------------------------------------------
 
 import PageTitle from "../components/PageTitle";
-import TableTeamsManual from "../components/TableTeamsManual";
 import CardStats from "../components/cardstats";
 import RaceJointTablePlot from "../components/RaceJointTablePlot";
 
@@ -101,15 +100,13 @@ export default function RaceInstance() {
         </Row>
 
         {race.plot2 ? (
-          <RaceJointTablePlot plotData={race.plot2} tabData={race.tab2} />
+          <RaceJointTablePlot
+            plotData={race.plot2}
+            tabData={race.tab2}
+            tabDataTeams={race.tabData}
+          />
         ) : (
           "no"
-        )}
-
-        {race.extraNote == "Teams" ? (
-          <TableTeamsManual tabData={race.tabData} />
-        ) : (
-          ""
         )}
       </Container>
     </>

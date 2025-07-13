@@ -6,8 +6,13 @@ import { TabView, TabPanel } from "primereact/tabview";
 
 import RacePlot2 from "./RacePlot2";
 import RaceTable from "./RaceTable";
+import TableTeamsManual from "../components/TableTeamsManual";
 
-export default function RaceJointTablePlot({ plotData, tabData }) {
+export default function RaceJointTablePlot({
+  plotData,
+  tabData,
+  tabDataTeams,
+}) {
   const [distance, setDistance] = useState("sprint");
   const [category, setCategory] = useState("Handicap points");
   const [categoryOptions, setCategoryOptions] = useState();
@@ -84,11 +89,14 @@ export default function RaceJointTablePlot({ plotData, tabData }) {
           )}
         </TabPanel>
         <TabPanel header="Table" leftIcon="pi pi-table mr-2">
-          <RaceTable
-            tabData={tabData}
-            distance={distance}
-            category={category}
-          />
+          {distance != "teams" && (
+            <RaceTable
+              tabData={tabData}
+              distance={distance}
+              category={category}
+            />
+          )}
+          {distance == "teams" && <TableTeamsManual tabData={tabDataTeams} />}
         </TabPanel>
       </TabView>
     </>
