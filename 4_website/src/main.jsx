@@ -189,7 +189,10 @@ const router = createBrowserRouter(
           errorElement={<ErrorPage />}
         >
           {dataMain.latestRace.date_ymd ? (
-            <Route index element={<Navigate to={`/total-races/${"all"}`} />} />
+            <Route
+              index
+              element={<Navigate to={`/total-races/${"byDistance"}`} />}
+            />
           ) : (
             ""
           )}

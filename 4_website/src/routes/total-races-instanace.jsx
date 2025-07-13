@@ -19,11 +19,10 @@ export default function TotalRacesInstance() {
           season.season_display ? "Total Races " + season.season_display : null
         }
       />
-      {/* <PageTitle title = "points test"/> */}
 
       <Container>
         <h1 className="memberTitle">
-          Total races for {season.season_display} as of {season.dateUpdated}
+          Total Races {season.season_display} as of {season.dateUpdated}
         </h1>
 
         <TotalRacesTable dataTotalRaces={season} />
