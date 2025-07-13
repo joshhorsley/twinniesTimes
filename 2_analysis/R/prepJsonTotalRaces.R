@@ -92,7 +92,7 @@ prepJsonTotalRaces <- function(conn, path_source, path_totalRacesData) {
   dt_totalRacesSeason[dt_members, on = .(id_member), `:=`(name_display = i.name_display)]
   
   
-  for(i_season in unique(dt_totalRacesSeason$season)) {
+  for(i_season in unique(dt_totalRacesSeason[season>=season_first_multi_distance]$season)) {
     
     # drop columns without any results for season
     dt_total_current <- dt_totalRacesSeason[season==i_season]
