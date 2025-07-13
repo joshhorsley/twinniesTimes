@@ -100,6 +100,7 @@ ordinal_suffix_of <- function(i) {
   dt_ordinal[j == 2 & k != 12, result := paste0(i,"nd")]
   dt_ordinal[j == 3 & k != 13, result := paste0(i,"rd")]
   dt_ordinal[is.na(result), result := paste0(i, "th")]
+  dt_ordinal[is.na(i), results := NA]
   
   dt_ordinal$result
 }
