@@ -42,8 +42,10 @@ prepJson_startTimesAll <- function(conn, path_source) {
                                   nextStartTime_displayStatus = nextStartTime_displayStatus[.N],
                                   displayHistory = displayHistory[.N],
                                   changeHistory = list(list(
-                                    data.table(dateNextStartDisplay = dateNextStartDisplay[rowInHistory],
-                                               nextStartTime_display = nextStartTime_display[rowInHistory])
+                                    data.table(
+                                      date_ymd_next = date_ymd_next[rowInHistory],
+                                      dateNextStartDisplay = dateNextStartDisplay[rowInHistory],
+                                      nextStartTime_display = nextStartTime_display[rowInHistory])
                                   ))
                                ),
                                by = .(id_member, name_display, hasChanges)]
