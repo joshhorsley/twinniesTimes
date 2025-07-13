@@ -45,8 +45,8 @@ prepJsonTotalRaces <- function(conn, path_source, path_totalRacesData) {
   # Notes -------------------------------------------------------------------
   
   
-  dt_totalDistanceNotes <- list(races_full =  "Includes Sprint (previously Full) and Double Distance events.",
-                                races_all = "In addition to Sprint+, this includes Tempta (previously Intermediate), Aquabike, Swimrun, and Teams but records for these are not comprehensive.",
+  dt_totalDistanceNotes <- list(races_full =  "Includes Sprint and longer distance triathlon events.",
+                                races_all = "In addition to Sprint+, includes all distances but records are not comprehensive.",
                                 sprint = "Since 2018/19 seson",
                                 tempta = "Since 2018/19 seson",
                                 doubledistance = "Since 2018/19 seson",
@@ -106,6 +106,7 @@ prepJsonTotalRaces <- function(conn, path_source, path_totalRacesData) {
       dcast.data.table(id_member + name_display ~ distanceID,value.var = "count")
     
     dt_cols_current <- dt_cols_all[columnID %in% names(dt_total_current_use)]
+    dt_cols_current[columnID != "races_full", note := NA]
     
     cols_use_current <- c("id_member",dt_cols_current$columnID)
     
