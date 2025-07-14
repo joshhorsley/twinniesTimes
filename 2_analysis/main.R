@@ -166,7 +166,7 @@ prepJson_home(pathsWebsiteData$source)
 prepJson_startTimesAll(conn, pathsWebsiteData$source)
 
 prepJsonTotalRaces(conn, pathsWebsiteData$source, pathsWebsiteData$totalRacesData)
-prepJsonTotalRaces(conn, pathsWebsiteData$source, pathsWebsiteData$bestTimesData)
+prepJsonBestTimesData(conn, pathsWebsiteData$source, pathsWebsiteData$bestTimesData)
 prepJsonPoints(conn, pathsWebsiteData$pointsData, pathsWebsiteData$source, tri_cols)
 
 prepJsonMemberData(conn, pathsWebsiteData$source, pathsWebsiteData$memberData)
