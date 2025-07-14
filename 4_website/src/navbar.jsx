@@ -59,6 +59,9 @@ export default function Header() {
           <Nav.Link eventKey="/total-races" as={NavLink} to="/total-races">
             Total Races
           </Nav.Link>
+          <Nav.Link eventKey="/best-times" as={NavLink} to="/best-times">
+            Best Times
+          </Nav.Link>
           <Nav.Link eventKey="/races" as={NavLink} to="/races">
             Races
           </Nav.Link>

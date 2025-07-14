@@ -46,6 +46,14 @@ import TotalRacesRoot, {
 
 import { totalRacesLoader } from "./total-races";
 import TotalRacesInstance from "./routes/total-races-instanace";
+// Bet times -----------------------------------
+
+import BestTimesRoot, {
+  loader as bestTimesRootLoader,
+} from "./routes/best-times-root";
+
+import { bestTimesLoader } from "./best-times";
+import BestTimesInstance from "./routes/best-times-instance";
 
 // Points -----------------------------------
 
@@ -192,6 +200,27 @@ const router = createBrowserRouter(
             path="/total-races/:totalRacesSeasonId"
             element={<TotalRacesInstance />}
             loader={totalRacesLoader}
+            errorElement={<ErrorPage />}
+          ></Route>
+        </Route>
+        {/* Best Times -------------------------------------------------------*/}
+        <Route
+          exact
+          path="/best-times"
+          element={<BestTimesRoot />}
+          loader={bestTimesRootLoader}
+          errorElement={<ErrorPage />}
+        >
+          {dataMain.latestRace.date_ymd ? (
+            <Route index element={<Navigate to={`/best-times/${"all"}`} />} />
+          ) : (
+            ""
+          )}
+
+          <Route
+            path="/best-times/:bestTimesSeasonId"
+            element={<BestTimesInstance />}
+            loader={bestTimesLoader}
             errorElement={<ErrorPage />}
           ></Route>
         </Route>
