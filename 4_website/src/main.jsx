@@ -234,7 +234,7 @@ const router = createBrowserRouter(
         />
         {/* Race Stats -------------------------------------------------------*/}
         <Route path="/club-stats" element={<ClubStats />} />
-        {/* Race Stats -------------------------------------------------------*/}
+        {/* Committee -------------------------------------------------------*/}
         <Route path="/committee" element={<Committee />} />
         {/* Awards -------------------------------------------------------*/}
         <Route path="/awards" element={<Awards />} />
