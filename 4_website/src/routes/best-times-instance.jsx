@@ -27,7 +27,7 @@ export default function BestTimesInstance() {
         <span>
           <span>
             <h1 className="memberTitle">
-              Best Times {season.season_display && season.season_display}
+              Best Times {season.season_display && season.season_display + " "}
               <OverlayTrigger
                 placement="bottom"
                 overlay={
