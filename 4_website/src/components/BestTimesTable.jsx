@@ -43,11 +43,6 @@ export default function BestTimesTable({ tabData }) {
 
   return (
     <>
-      <p>
-        Best times for total and individual laps. Lap and total times for each
-        member may not be from the same race, see all races details on the
-        linked member's page.
-      </p>
       <SelectButton
         allowEmpty={false}
         value={distance}
