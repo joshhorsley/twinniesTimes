@@ -18,9 +18,12 @@ carryBestForward <- function(x) {
     
     ind_first_season <- min(which(ind_finite))
     
-    for(k in (ind_first_season+1):n_season) {
-      if(!ind_finite[k]) {
-        x_out[k] <- x_out[k-1] # add + 180 here if allowing 3 minutes per season
+    if(ind_first_season<n_season) {
+      
+      for(k in (ind_first_season+1):n_season) {
+        if(!ind_finite[k]) {
+          x_out[k] <- x_out[k-1] # add + 180 here if allowing 3 minutes per season
+        }
       }
     }
   }
