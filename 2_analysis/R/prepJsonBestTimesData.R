@@ -77,7 +77,7 @@ prepJsonBestTimesData <- function(conn,
   ))
   
   list_export |> 
-    toJSON(pretty = TRUE) |> 
+    toJSON(pretty = FALSE) |> 
     write(file.path(path_bestTimeData, "all.json"))
   
   
@@ -118,7 +118,7 @@ prepJsonBestTimesData <- function(conn,
     ))
     
     list_export |> 
-      toJSON(pretty = TRUE) |> 
+      toJSON(pretty = FALSE) |> 
       write(file.path(path_bestTimeData, glue("{season}.json", season = season_i)))
     
   }
