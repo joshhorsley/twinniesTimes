@@ -86,6 +86,8 @@ import ClubStats from "./routes/club-stats";
 
 import Committee from "./routes/committee";
 
+import Awards from "./routes/awards";
+
 // data ------------------------------------------------
 
 import dataMain from "./data/main.json";
@@ -234,6 +236,8 @@ const router = createBrowserRouter(
         <Route path="/club-stats" element={<ClubStats />} />
         {/* Race Stats -------------------------------------------------------*/}
         <Route path="/committee" element={<Committee />} />
+        {/* Awards -------------------------------------------------------*/}
+        <Route path="/awards" element={<Awards />} />
       </Route>
     </>
   )

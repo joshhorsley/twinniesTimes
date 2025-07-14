@@ -174,6 +174,7 @@ prepJsonRaceData(conn, pathsWebsiteData$source, pathsWebsiteData$raceData)
 
 prepJsonClubMetrics(conn, pathsWebsiteData$source)
 prepJsonCommittee(conn, pathsWebsiteData$source)
+prepJsonAwards(conn, pathsWebsiteData$source)
 
 
 # Process registrations ---------------------------------------------------

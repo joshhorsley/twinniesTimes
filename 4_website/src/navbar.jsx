@@ -71,6 +71,9 @@ export default function Header() {
           <Nav.Link eventKey="/committee" as={NavLink} to="/committee">
             Committee
           </Nav.Link>
+          <Nav.Link eventKey="/awards" as={NavLink} to="/awards">
+            Awards
+          </Nav.Link>
 
           {/* <NavLink to="/start-times">Start Times</NavLink> */}
           {/* <NavLink  to="/">Home</NavLink>
