@@ -41,6 +41,32 @@ export default function BestTimesTable({ tabData }) {
     distance && setNLaps(partsDefAll.nLaps[distance][0]);
   }, [tabData, distance]);
 
+  // dynamic table height -----------------------
+
+  const [tableStart, setTableStart] = useState({
+    // start: document.getElementById("tableCommittee").offsetTop
+    start: 141,
+  });
+
+  const [windowDimensions, setWindowDimensions] = useState({
+    width: window.innerWidth,
+    height: window.innerHeight,
+  });
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowDimensions({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // return -----------------------
+
   return (
     <>
       <SelectButton
@@ -51,7 +77,13 @@ export default function BestTimesTable({ tabData }) {
         optionLabel="distanceDisplay"
         onChange={(e) => setDistance(e.value)}
       />
-      <DataTable value={tabDataUse} sortField="TimeTotal" sortOrder={1}>
+      <DataTable
+        value={tabDataUse}
+        sortField="TimeTotal"
+        sortOrder={1}
+        scrollable
+        scrollHeight={`${windowDimensions.height - tableStart.start - 10}px`}
+      >
         <Column
           field="id_member"
           header="Name"
