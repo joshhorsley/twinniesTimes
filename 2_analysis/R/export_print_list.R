@@ -4,7 +4,7 @@ export_print_list <- function(
     date_ymd_nice,
     dt_marshals,
     milestones = c(25,50),
-    milestones_season = 5,
+    milestones_season = 3,
     distancseSprintPlus = c("Sprint","Double Sprint"),
     do_genderCats = FALSE
 ) {
