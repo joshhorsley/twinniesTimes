@@ -112,10 +112,12 @@ init_startTimesAndPoints <- function(conn,
   # Map next race -----------------------------------------------------------
   
   
-  dt_racesSeason[, racedSprint := date_ymd %in% dt_StartPointsBest[(racedSprint)]$date_ymd]
+  dt_racesSeason[, haveResults := date_ymd %in% unique(c(dt_results_sprint$date_ymd, dt_results_nonsprint$date_ymd))]
+  
+  dt_racesSeason[, racedSprint := date_ymd %in% unique(dt_StartPointsBest[(racedSprint)]$date_ymd)]
   dt_racesSeason[, isHandicapped := special_event %notin% eventStartTimeExclude]
   
-  dt_racesSeason[, ind_next := nexthandicapped(racedSprint, isHandicapped)]
+  dt_racesSeason[, ind_next := nexthandicapped(racedSprint, isHandicapped, cancelled_reason, haveResults, special_event)]
   dt_racesSeason[, date_ymd_next := dt_racesSeason$date_ymd[ind_next]]
   dt_racesSeason[, season_next := dt_racesSeason$season[ind_next]]
   
