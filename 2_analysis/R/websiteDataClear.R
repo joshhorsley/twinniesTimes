@@ -1,7 +1,7 @@
   refreshDir <- function(path) {
     if(dir.exists(path)) unlink(path, recursive = TRUE)
     
-    dir.create(path)
+    dir.create(path, recursive = TRUE)
   }
   
   
