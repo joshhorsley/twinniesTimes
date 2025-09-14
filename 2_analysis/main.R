@@ -44,7 +44,7 @@ paths <- list(
   manual = "../1_dataProvided/manual.xlsx",
   webscorer = "../1_dataProvided/webscorer",
   dir_twintownMemberships = "../1_dataProvided/twintownMembership",
-  dir_log = "../logs"
+  dir_log_mailchimp = "../logs/mailchimp"
 )
 
 
@@ -182,7 +182,7 @@ prepJsonAwards(conn, pathsWebsiteData$source)
 
 if(FALSE) {
   prep_startLatest(conn)
-  process_mailChimpLatest(conn, paths$dir_log, privateKeys$mailChimp)
+  process_mailChimpLatest(conn, paths$dir_log_mailchimp, privateKeys$mailChimp)
   quarto::quarto_render("docs/membership.qmd")
   # prep_membershipPrintout(conn)
   prep_startTeams(conn, do_print = TRUE, do_allocation = FALSE)

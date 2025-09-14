@@ -10,8 +10,6 @@ process_mailChimpLatest <- function(conn,
   # Prep Python -------------------------------------------------------------
   
   
-  use_condaenv("twinniesTimes")
-  
   source_python("py/check_contact.py")
   
   
@@ -71,12 +69,14 @@ process_mailChimpLatest <- function(conn,
   # Log ---------------------------------------------------------------------
   
   
+  if(!dir.exists(path_log_dir)) refreshDir(path_log_dir)
+  
   list_log <- list(all = dt_reg)
   
   date_register <- dt_reg$date_ymd[1]
   datetime_process <- Sys.time() |> format("%Y-%m-%d_%H-%M-%S_%Z")
   
-  path_log <- file.path(path_log_dir, "mailChimp",
+  path_log <- file.path(path_log_dir,
                         as.character(glue("{date_register} registrations - run at {datetime_process}.json")))
   
   write_json(list_log, path_log)
