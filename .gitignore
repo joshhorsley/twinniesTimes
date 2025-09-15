@@ -7,6 +7,7 @@
 3_startLists
 logs/*
 2_analysis/docs/*.docx
+README.html
 
 # Apple filesystem
 .DS_Store
