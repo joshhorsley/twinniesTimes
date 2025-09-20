@@ -19,7 +19,7 @@ init_registrations <- function(conn,
   dt_registrations[season=="2023-2024", path_dir_base := file.path(path_webscorer, season,"races" ,date_ymd, "1_INPUT_registration")]
   dt_registrations[season>"2023-2024", path_dir_base := file.path(path_webscorer, season ,date_ymd, "1_INPUT_registration")]
   
-  dt_registrations[, path_results := list.files(path_dir_base, pattern = "xls$", full.names = TRUE), by = .(path_dir_base)]
+  dt_registrations[, path_results := list.files(path_dir_base, pattern = "[xls|xlsx]$", full.names = TRUE), by = .(path_dir_base)]
   
   dt_registrations[!is.na(path_results), dt_rego := list(list(as.data.table(read_excel(path_results)))), by = path_results]
   setattr(dt_registrations$dt_rego, 'names', dt_registrations$path_results)
