@@ -19,9 +19,9 @@ init_raceResultsWebscorerNew <- function(conn, path_webscorer) {
 
 # Identify and load available results -------------------------------------
 
-
+  
   dt_races_new[, path_dir_base := file.path(path_webscorer, season, date_ymd, "3_INPUT_race_results")]
-  dt_races_new[, path_results := list.files(path_dir_base, pattern = "xls$", full.names = TRUE), by = .(path_dir_base)]
+  dt_races_new[, path_results := list.files(path_dir_base, pattern = "^[A-Za-b0-9].*[xls|xlsx]$", full.names = TRUE), by = .(path_dir_base)]
   
   dt_races_new[!is.na(path_results), dt_results := list(list(import_resultsForEdit(path_results))), by = path_results]
   setattr(dt_races_new$dt_results, 'names', dt_races_new$path_results)
