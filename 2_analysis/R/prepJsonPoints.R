@@ -6,8 +6,8 @@ prepJsonPoints <- function(conn, path_pointsData, path_source, tri_cols) {
   
   dt_members <-  dt_dbReadTable(conn, "members")
   dt_StartPointsBest <-  dt_dbReadTable(conn, "timesBestPoints")[season>="2024-2025"]
-
-    
+  
+  
   # Point Seasons list ------------------------------------------------------
   
   
@@ -151,7 +151,7 @@ prepJsonPoints <- function(conn, path_pointsData, path_source, tri_cols) {
   
   dt_plotRefs[, yaxisAddIn := data.table(list(list(
     tickmode = "array",
-    range = c(0, y_plot + 1),
+    range = c(0, n_athletes + 1),
     tickvals = n_athletes - unlist(yTickList) + 1,
     ticktext = unlist(yTickList)
     
@@ -218,5 +218,6 @@ prepJsonPoints <- function(conn, path_pointsData, path_source, tri_cols) {
     
     
   }
+  
   
 }
