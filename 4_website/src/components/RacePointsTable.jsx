@@ -35,7 +35,7 @@ export default function RacePointsTable({ pointsTab }) {
             value={pointsTab[0]}
             headerColumnGroup={headerGroup}
             sortField="points_all_awarded"
-            sortOrder={1}
+            sortOrder={-1}
           >
             <Column
               field="id_member"
