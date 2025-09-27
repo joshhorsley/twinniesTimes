@@ -149,7 +149,35 @@ prepJsonRaceData <- function(conn,
   dt_distancePartsSummary[, varsUse := lapply(lapSplit, function(x) list(c(varsCommon, x))), by = distanceID]
   
   
-  dt_plotPrep <- dt_raceResults[season>="2024-2025"]
+  
+  # data prep
+  dt_plotPrep_2024_25 <- dt_raceResults[season=="2024-2025"]
+  dt_plotPrep_2025_26_races <- dt_raceResults[season>="2025-2026"]
+  
+  dt_plotPrep_2024_25[, raced := TRUE]
+  dt_plotPrep_2025_26_races[, raced := TRUE]
+  
+  # for 2025/26 conwards also include marshalling for race points table
+  dt_marshalling[dt_races, on = .(date_ymd), season := i.season]
+  
+  dt_plotPrep_2025_26 <- rbindlist(
+    list(
+      dt_plotPrep_2025_26_races,
+      dt_marshalling[season>="2024-2026", .(date_ymd, id_member, raced = FALSE)]
+    ),
+    use.names = TRUE,
+    fill = TRUE)
+  
+  
+  dt_plotPrep <- rbindlist(
+    list(
+      dt_plotPrep_2024_25,
+      dt_plotPrep_2025_26
+    ))
+  
+  
+  # check haven't got marshalling and timing results
+  stopifnot(nrow(dt_plotPrep[, .N, by = .(id_member,date_ymd)][N>1])==0)
   
   
   dt_plotPrep[dt_members, on = .(id_member), name_display := i.name_display]
