@@ -28,7 +28,7 @@ process_mailChimpLatest <- function(conn,
   
   # uniqueness  
   dt_reg[, email_occurance := seq(.N), by = email]
-  dt_reg <- dt_reg[email_occurance==1]
+  dt_reg <- dt_reg[email_occurance==1 & !is.na(email)]
   
   
   # Process -----------------------------------------------------------------
