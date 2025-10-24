@@ -219,7 +219,7 @@ prep_startLatest <- function(conn,
                                            `Start time`)]
   
   
-  dt_all_with_time_except_non_sprint <- dt_bestTimes[chip_character %notin% dt_reg_non_sprint$Bib,
+  dt_all_with_time_except_non_sprint <- dt_bestTimes[!is.na(chip_character) & chip_character %notin% dt_reg_non_sprint$Bib,
                                                      .(Name = name_display,
                                                        Distance,
                                                        Category,
@@ -252,6 +252,8 @@ prep_startLatest <- function(conn,
   )
   
   setorder(dt_start_webscorer_out,`Start time`)
+  
+  stopifnot(nrow(dt_start_webscorer_out[, .N, by = Name][N>1])==0)
   
   
   write.xlsx(dt_start_webscorer_out, paths_out$webscorer)
