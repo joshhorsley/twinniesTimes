@@ -3,7 +3,7 @@ how_many_groupings <- function(n,n_groups,n_size) factorial(n)/factorial(n_size)
 
 
 prep_startTeams <- function(conn,
-                            temptaRatio = 1.8,
+                            temptaRatio = 1.7,
                             list_pairs_avoid = list(
                               c("Kipp Freeman","Ginny Jones"),
                               c("Greg Freeman","Ginny Jones"),
@@ -25,8 +25,10 @@ prep_startTeams <- function(conn,
   dt_reg <- dt_dbReadTable(conn, "registrations")[date_ymd==max(date_ymd)]
   date_ymd_use <- dt_reg[1]$date_ymd
   
-  dt_bestTimesSprint <-  dt_dbReadTable(conn, "timesBestPoints")[date_ymd==max(date_ymd) & timeBest < Inf][, .(id_member, timeBest)]
-  dt_resultsTempta <- dt_dbReadTable(conn, "raceResults")[season=="2024-2025" & distanceID =="tempta"]
+  # dt_bestTimesSprint <-  dt_dbReadTable(conn, "timesBestPoints")[date_ymd==max(date_ymd) & timeBest < Inf][, .(id_member, timeBest)]
+  dt_bestTimesSprint <- dt_dbReadTable(conn, "timesBestPoints")[date_ymd_next==date_ymd_use & nextStartUse < Inf, .(id_member, nextStartUse)]
+  
+  dt_resultsTempta <- dt_dbReadTable(conn, "raceResults")[season>="2024-2025" & distanceID =="tempta"]
   
   
   dt_memberChipLatest <- dt_dbReadTable(conn, "memberChipLatest")
@@ -52,13 +54,13 @@ prep_startTeams <- function(conn,
   
   dt_teams[dt_memberChipLatest, on = .(Bib = chip_character), id_member := i.id_member]
   
-  dt_teams[dt_bestTimesSprint, on = .(id_member), timeBest := i.timeBest]
+  dt_teams[dt_bestTimesSprint, on = .(id_member), nextStartUse := nextStartUse]
   
   # tempta
   dt_bestTimesTempta <- dt_resultsTempta[, .(timeBest = min(TimeTotal)), by = id_member]
   dt_teams[dt_bestTimesTempta, on = .(id_member), timeBestTempta := i.timeBest]
   
-  dt_teams[, x := ifelse(is.na(timeBest), timeBestTempta * temptaRatio, timeBest)]
+  dt_teams[, x := ifelse(is.na(nextStartUse), timeBestTempta * temptaRatio, nextStartUse)]
   
   dt_teams[!is.na(bestTimeSprintOverride), x := bestTimeSprintOverride]
   
