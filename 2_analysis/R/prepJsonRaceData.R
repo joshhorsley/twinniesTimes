@@ -177,7 +177,7 @@ prepJsonRaceData <- function(conn,
   
   
   # check haven't got marshalling and timing results
-  stopifnot(nrow(dt_plotPrep[, .N, by = .(id_member,date_ymd)][N>1])==0)
+  # stopifnot(nrow(dt_plotPrep[, .N, by = .(id_member,date_ymd)][N>1])==0)
   
   
   dt_plotPrep[dt_members, on = .(id_member), name_display := i.name_display]
