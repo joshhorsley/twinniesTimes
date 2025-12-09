@@ -73,6 +73,7 @@ prep_startLatest <- function(conn,
   dt_always_options <- list("Placeholder Aquabike 6:15" = 15*60,
                             "Placeholder Tempta 6:15" = 15*60,
                             "Placeholder Swimrun 6:15" = 15*60,
+                            "Placeholder Riderun 6:15" = 15*60,
                             "Placeholder Sprint Non-handicapped 6:00" = 0) |> 
     list_to_dt()
   
@@ -80,8 +81,8 @@ prep_startLatest <- function(conn,
   
   dt_always_options[, `Start time` := seconds_to_hms_simple(dt_timeOffsets$startOffset + seconds_offset)]
   dt_always_options[, Wave := seconds_to_hms_simple(21600L + seconds_offset)]
-  dt_always_options[, Distance := c("Aquabike","Tempta","Swimrun","Sprint")]
-  dt_always_options[, Category := c("All","All","All","Non-handicapped")]
+  dt_always_options[, Distance := c("Aquabike","Tempta","Swimrun","Riderun","Sprint")]
+  dt_always_options[, Category := c("All","All","All","All","Non-handicapped")]
   
   
   dt_always_options[, Bib := NA]  
@@ -153,7 +154,7 @@ prep_startLatest <- function(conn,
   
   
   # non-sprint distances - this takes bib from registration
-  distances_615 <- c("Tempta", "Swimrun","Aquabike", "Palindrome Aquabike")
+  distances_615 <- c("Tempta", "Swimrun","Aquabike","Riderun", "Palindrome Aquabike")
   
   dt_reg_non_sprint1 <- dt_reg[Distance %in% distances_615,
                                .(Name, Distance, 
