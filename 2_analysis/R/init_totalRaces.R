@@ -26,7 +26,7 @@ init_totalRaces <- function(conn, path_manual) {
                      fill = 0,
                      value.var = "races")
   
-  dt_totals_new_wide[, races_full := as.integer(sprint + doubledistance + palindrometri)]
+  dt_totals_new_wide[, races_full := as.integer(sprint + doubledistance + palindrometri +longtri)]
   
   
   # Totals by season --------------------------------------------------------
@@ -46,7 +46,7 @@ init_totalRaces <- function(conn, path_manual) {
   
   # complicated row add initially done to avoid NAs
   components_for_races_all <- setdiff(names(dt_totals_by_season),
-                                      c("id_member","season", "sprint","doubledistance"))
+                                      c("id_member","season", "sprint","doubledistance","longtri","palindrometri"))
   
   dt_totals_by_season[, races_all := rowSums(.SD, na.rm = TRUE), .SDcols = components_for_races_all]
   
