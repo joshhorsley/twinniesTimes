@@ -37,7 +37,7 @@ prepJson_startTimesAll <- function(conn, path_source) {
   
   dt_StartPointsBest[, hasAnyTimedResults := any(is.finite(timeBestPreviousUse) | is.finite(TimeTotal) )]
   
-  dt_out <- dt_StartPointsBest[(hasAnyTimedResults)
+  dt_out <- dt_StartPointsBest[(hasAnyTimedResults) & !is.na(dateNextStartDisplay)
                                ,.(nextStartTime_display = nextStartTime_display[.N],
                                   nextStartTime_displayStatus = nextStartTime_displayStatus[.N],
                                   displayHistory = displayHistory[.N],
