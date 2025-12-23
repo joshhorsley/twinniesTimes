@@ -10,6 +10,55 @@ import triCols from "./../clubColours.json";
 
 // plot constants
 
+// data always show - for legend
+
+const dataAlways = [
+  {
+    customdata: { distance: "always" },
+
+    name: "Swim",
+    marker: { color: triCols.swim },
+    legendrank: "3",
+
+    type: "bar",
+    x: [null],
+    y: [null],
+  },
+  {
+    customdata: { distance: "always" },
+
+    name: "Ride",
+    marker: { color: triCols.ride },
+    legendrank: "2",
+
+    type: "bar",
+    x: [null],
+    y: [null],
+  },
+  {
+    customdata: { distance: "always" },
+
+    name: "Run",
+    marker: { color: triCols.run },
+    legendrank: "1",
+
+    type: "bar",
+    x: [null],
+    y: [null],
+  },
+  {
+    customdata: { distance: "always" },
+
+    name: "Teams",
+    marker: { color: triCols.teamsTotal },
+    legendrank: "0",
+
+    type: "bar",
+    x: [null],
+    y: [null],
+  },
+];
+
 const layoutBase = {
   barmode: "stack",
 
@@ -79,8 +128,7 @@ export default function RacePlot2({ plotData, distance, category }) {
       .filter((e) => e.Category == category);
 
     // bar data
-    setBarData(
-      plotDataFiltered.map((e) => {
+    const dataBar =  plotDataFiltered.map((e) => {
         const customdataPrep = e.catData.dx.map((e2, i) => {
           const haveMultiple = Array.isArray(e.catData.name_display);
 
@@ -123,7 +171,7 @@ export default function RacePlot2({ plotData, distance, category }) {
             "%{customdata.name_display}<br>%{customdata.TimeTotal_hms}<br>%{customdata.lapDisplay}<br>%{customdata.dx_hms}<extra></extra>",
         };
       })
-    );
+    setBarData([...dataBar, ...dataAlways]);
 
     // name annotations
     const annotationsFiltered = plotData.annotations
