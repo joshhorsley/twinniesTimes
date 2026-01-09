@@ -5,7 +5,7 @@ export_print_list <- function(
     dt_marshals,
     milestones = c(25,50),
     milestones_season = 3,
-    distancseSprintPlus = c("Sprint","Double Sprint"),
+    distancseSprintPlus = c("Sprint","Double Sprint","Palindrome Tri","Long Tri"),
     do_genderCats = FALSE
 ) {
   
