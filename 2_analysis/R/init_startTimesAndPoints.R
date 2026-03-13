@@ -1,6 +1,6 @@
 init_startTimesAndPoints <- function(conn,
                                      path_manual,
-                                     cats_eligible = c("Handicap Points","Non-championship","Club Champs"),
+                                     cats_eligible = c("Handicap Points","Non-championship","Club Champs", "Club Champs <50", "Club Champs 50+"),
                                      eventStartTimeExclude = c("Teams", "Club Champs")
 ) {
   
