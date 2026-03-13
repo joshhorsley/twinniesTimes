@@ -1,6 +1,6 @@
 init_awards <- function(conn, path_manual) {
   
-  dt_awards_wide <- read_excel(path_manual,sheet = "awards") |> 
+  dt_awards_wide <- read_excel(path_manual,sheet = "awards", col_type = "text") |> 
     as.data.table()
   
   
