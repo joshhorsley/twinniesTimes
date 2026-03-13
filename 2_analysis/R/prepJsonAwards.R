@@ -34,7 +34,13 @@ prepJsonAwards <- function(conn, path_source) {
   dt_cols <- data.table(columnID = setdiff(names(dt_award_prep),"seasonDisplay"))
   dt_cols[, title := columnID]
   
-  dt_cols[, columnID := ordered(columnID, c("Presidents Award", "Club Person of the Year", "Encouragement","Galah","Most Couragous Act on 2 wheels","Point Score",
+  dt_cols[, columnID := ordered(columnID, c("The Kev Bannerman Club Person of the Year", 
+                                            "Point Score",
+                                            "<50 Female",
+                                            "<50 Male",
+                                            "50+ Female",
+                                            "50+ Male",
+                                            "Club Person of the Year", "Encouragement","Galah","Most Couragous Act on 2 wheels",
                                             "Overall Male",
                                             "Overall Female",
                                             "Under 18 Male",
@@ -57,8 +63,6 @@ prepJsonAwards <- function(conn, path_source) {
                                             "18-34 Female",
                                             "35-49 Male",
                                             "35-49 Female",
-                                            "50+ Male",
-                                            "50+ Female",
                                             "Fastest Swim Overall",
                                             "Fastest Ride Overall",
                                             "Fastest Run Overall",
