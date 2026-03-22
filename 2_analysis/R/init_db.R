@@ -74,6 +74,7 @@ external TEXT,
 start_time_change TEXT,
 delay_points TEXT,
 cancelled_reason TEXT,
+award_points INT,
 FOREIGN KEY(season) REFERENCES seasons(season) 
 );")
   
