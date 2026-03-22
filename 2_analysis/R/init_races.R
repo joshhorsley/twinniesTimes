@@ -16,13 +16,17 @@ init_races <- function(conn, path_manual, start_default  =  "06:00" ) {
   dt_races[, start_time_change := format(start_time_change, "%H:%M")]
   dt_races[is.na(start_time_change), start_time_change := start_default]
   
+  # default to include races
+  dt_races[is.na(award_points), award_points := TRUE]
+  
   dbAppendTable(conn, "races", dt_races[, .(date_ymd = format(date_ymd, "%Y-%m-%d"),
                                             season,
                                             special_event,
                                             external,
                                             start_time_change,
                                             delay_points,
-                                            cancelled_reason)])
+                                            cancelled_reason,
+                                            award_points)])
 }
 
 

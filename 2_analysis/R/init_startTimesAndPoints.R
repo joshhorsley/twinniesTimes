@@ -14,7 +14,7 @@ init_startTimesAndPoints <- function(conn,
   dt_previous <- read_excel(path_manual, sheet = "handicapTimesSeasonStart") |> 
     as.data.table()
   
-  dt_races_new <- dt_dbReadTable(conn, "races")[date_ymd >= date_previous, .(season, date_ymd)]
+  dt_races_new <- dt_dbReadTable(conn, "races")[date_ymd >= date_previous, .(season, date_ymd, award_points)]
   
   dt_results_sprint <- dt_dbReadTable(conn, "raceResults")[date_ymd > date_previous & distanceID=="sprint"]
   
@@ -48,7 +48,7 @@ init_startTimesAndPoints <- function(conn,
   
   # season
   dt_StartPointsBest[date_ymd == date_previous, season := "2023-2024"]
-  dt_StartPointsBest[dt_races_new, on = .(date_ymd), season := i.season]
+  dt_StartPointsBest[dt_races_new, on = .(date_ymd), `:=`(season = i.season, award_points = i.award_points)]
   
   
   # Add sprint results ------------------------------------------------------
@@ -139,7 +139,7 @@ init_startTimesAndPoints <- function(conn,
   dt_StartPointsBest[(racedSprint) & (comparableTimes), timeDiff := TimeTotal - timeBestPreviousUse]
   
   # award handicap points in category to up to 15 greatest improvement
-  dt_StartPointsBest[, handicapPoints_eligible := (racedSprint) & Category %in% cats_eligible  & (comparableTimes)]
+  dt_StartPointsBest[, handicapPoints_eligible := (racedSprint) & Category %in% cats_eligible  & (comparableTimes) & (award_points)]
   dt_StartPointsBest[(handicapPoints_eligible), timeDiffRank := frank(timeDiff, ties.method = "min"), by = .(date_ymd)]
   dt_StartPointsBest[, handicapPoints_give := (handicapPoints_eligible) & timeDiffRank < 16L & timeDiff < 0L]
   dt_StartPointsBest[, points_handicap_awarded := ifelse(handicapPoints_give, 16L - timeDiffRank,0L)]
@@ -149,25 +149,27 @@ init_startTimesAndPoints <- function(conn,
   
   
   # sprint races
-  dt_StartPointsBest[, points_participation_awarded := ifelse(racedSprint, 15L, 0L) ]
+  dt_StartPointsBest[, points_participation_awarded := ifelse(racedSprint & award_points, 15L, 0L) ]
   
   # non-sprint races
+  dt_results_nonsprint[dt_races_new, on = .(date_ymd), award_points := i.award_points]
   # 2024-2025
   dt_results_nonsprint[season=="2024-2025",
                        points_participation_awarded := ifelse(distanceID %in% c("doubledistance", "palindrometri","riderun"), 30L, 0L)]
   dt_results_nonsprint[season>="2025-2026",
-                       points_participation_awarded := ifelse(distanceID %in% c("doubledistance", "palindrometri","teams","longtri"), 30L, 0L)]
+                       points_participation_awarded := ifelse(distanceID %in% c("doubledistance", "palindrometri","teams","longtri") & award_points, 30L, 0L)]
   
   dt_StartPointsBest[dt_results_nonsprint, on = .(date_ymd, id_member), points_participation_awarded := i.points_participation_awarded]
   
   # marshaling
   dt_marshalling[dt_races_new, on = .(date_ymd), season := i.season]
+  dt_marshalling[dt_races_new, on = .(date_ymd), award_points := i.award_points]
   
   # starting 2025-2026 30 points for first two marshaling per season, then 15
   dt_marshalling[, marshal_ordinal := seq(.N), by = .(season, id_member)]
   
   dt_marshalling[season=="2024-2025", points_marshal := 0]
-  dt_marshalling[season >= "2025-2026", points_marshal := ifelse(marshal_ordinal < 3, 30, 15)]
+  dt_marshalling[season >= "2025-2026" & award_points, points_marshal := ifelse(marshal_ordinal < 3, 30, 15)]
   
   dt_StartPointsBest[dt_marshalling, on = .(date_ymd, id_member), points_marshal_awarded := i.points_marshal]
   dt_StartPointsBest[is.na(points_marshal_awarded), points_marshal_awarded := 0]
@@ -180,6 +182,7 @@ init_startTimesAndPoints <- function(conn,
   
   
   dt_StartPointsBest[, points_all_awarded := points_handicap_awarded + points_participation_awarded]
+  dt_StartPointsBest[, award_points := NULL]
   
   # running totals
   dt_StartPointsBest[, c("points_all_total",
