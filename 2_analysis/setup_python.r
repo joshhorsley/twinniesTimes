@@ -1,4 +1,5 @@
 library(reticulate)
+# install python if needed install_python(version = "3.14:latest")
 virtualenv_create("./venv")
 py_install("mailchimp-marketing", envname = "./venv/")
 
