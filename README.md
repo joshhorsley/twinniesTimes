@@ -10,9 +10,9 @@ This project automates the processing of results, related stats, and admin tasks
 # Setup
 
 1. Create soft link (or copy) of `1_dataProvided` on google drive to base directory
-1. Install R dependencies in `2_analysis` using `renv::restore()` - note that XLConnect requires [java](https://www.java.com/en/)
+1. Install R dependencies in `2_analysis` using `renv::restore()` - note that XLConnect requires [java development kit](https://www.java.com/en/) and may fail in unxpected ways if not installed
 1. Install Python 3.13.7 or higher and setup project library from `2_analysis` using `setup_python.r`
-1. Install npm and from `4_website` run `npm install`
+1. Install [node](https://nodejs.org/en) and from `4_website` run `npm install`
 
 # Processing results
 
