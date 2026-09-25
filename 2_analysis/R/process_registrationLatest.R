@@ -84,8 +84,28 @@ prep_startLatest <- function(conn,
   dt_always_options[, Distance := c("Aquabike","Tempta","Swimrun","Riderun","Sprint")]
   dt_always_options[, Category := c("All","All","All","All","Non-handicapped")]
   
-  
   dt_always_options[, Bib := NA]  
+  
+  
+  set_times_mins <- seq(from = 5L, to = 40L, by = 5L) # minutes after 6a to always include
+  set_times_seconds <- set_times_mins*60
+  dt_set_times <- data.table(
+    Name = NA_character_,
+    seconds_offset = set_times_seconds,
+    `Start time` = seconds_to_hms_simple(dt_timeOffsets$startOffset + set_times_seconds),
+    Wave = seconds_to_hms_simple(21600L + set_times_seconds),
+    Distance = NA,
+    Category = NA,
+    Bib = NA
+  )
+  dt_set_times[, Name := glue("Placeholder wave {Wave}", Wave = Wave) |> as.character()]
+  
+  dt_always_options <- rbindlist(
+    list(
+      dt_always_options,
+      dt_set_times
+    )
+  )
   
   
   # add 5:30 option if double distance
