@@ -135,6 +135,9 @@ prep_startLatest <- function(conn,
   dt_bestTimes[, `Start time`:= seconds_to_hms_simple(dt_timeOffsets$startOffset + 5400 - min(nextStartUse, 5400)), by = .(id_member)]
   dt_bestTimes[, wave_time := seconds_to_hms_simple(7.5*3600 - min(nextStartUse, 5400)), by = .(id_member)]
   dt_bestTimes[, wave_names := paste0(name_display, collapse = ", "), by = .(`Start time`) ]
+  dt_bestTimes[nchar(wave_names) > 30,
+               wave_names := wave_names[1] |> strsplit(", ") |> (\(x) x[[1]][1:2])() |> c("et al.") |> paste0(collapse = ", "), 
+               by = .(wave_names)]
   
   dt_bestTimes[wave_time != "6:15:00", Wave :=  as.character(glue::glue_data(.SD, "{wave_time} ({wave_names})"))]
   dt_bestTimes[wave_time == "6:15:00", Wave :=  wave_time]
