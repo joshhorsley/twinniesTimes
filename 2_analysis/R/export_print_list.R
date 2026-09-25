@@ -6,7 +6,8 @@ export_print_list <- function(
     milestones = c(25,50),
     milestones_season = 3,
     distancseSprintPlus = c("Sprint","Double Sprint","Palindrome Tri","Long Tri"),
-    do_genderCats = FALSE
+    do_genderCats = FALSE,
+    date_ymd_membership_update
 ) {
   
   
@@ -49,16 +50,22 @@ export_print_list <- function(
     
     dt_use_reg <- dt_start_print[order(as.numeric(Bib)), .(Bib, Name, Distance,
                                                            `Start` = wave_time,
-                                                           `Expected\nMilestone` = notableDisplay)]
+                                                           `Expected\nMilestone` = notableDisplay,
+                                                           membershipStatus)]
     
   } else {
     
     dt_use_reg <- dt_start_print[order(as.numeric(Bib)), .(Bib, Name, Distance,
                                                            Category, Gender,
                                                            `Start` = wave_time,
-                                                           `Expected\nMilestone` = notableDisplay)]
+                                                           `Expected\nMilestone` = notableDisplay,
+                                                           membershipStatus)]
     
   }
+  
+  # add membership
+  membership_title <- paste0("Membership Issues\nas at ", date_ymd_membership_update)
+  setnames(dt_use_reg, "membershipStatus", membership_title)
   
   # workbook
   wb <- createWorkbook()
@@ -136,11 +143,11 @@ export_print_list <- function(
   
   # page setup
   cols_width <- if(do_genderCats) {
-    c(5, rep("auto",4),12,10,3, rep("auto",2))
+    c(5, rep("auto",4),12,8,19,1, rep("auto",2))
     
   } else {
     
-    c(5, rep("auto",2),12,10,3, rep("auto",2))
+    c(5, rep("auto",2),12,8,19,1, rep("auto",2))
   }
   
 

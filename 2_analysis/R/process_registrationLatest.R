@@ -293,6 +293,13 @@ prep_startLatest <- function(conn,
   write.xlsx(dt_start_webscorer_out, paths_out$webscorer)
   
   
+  # Membership status -------------------------------------------------------
+
+  
+  dt_twintownMeberships <- dt_dbReadTable(conn, "twintownMemberships")
+  
+  dt_twintownMeberships[dt_members, on = .(twintownsMembershipID), id_member := i.id_member]
+  weeks_soon <- 2
   
   # Export print ------------------------------------------------------------
   
@@ -313,8 +320,17 @@ prep_startLatest <- function(conn,
   
   dt_start_print[dt_totalRacesThisSeason, on = .(id_member), `:=`(races_all_this_season = i.races_all)]
   
+  dt_start_print[dt_twintownMeberships, on = .(id_member), date_dueTriathlon := i.date_dueTriathlon]
+  dt_start_print[, membershipStatus := fcase(
+    is.na(date_dueTriathlon), paste0("NONE SINCE ", dt_twintownMeberships$date_updated |> min()),
+    is.na(Bib), "NO CHIP - FIRST RACE?",
+    date_dueTriathlon < date_ymd_use, paste0("EXPIRED: ", date_dueTriathlon),
+    as.Date(date_dueTriathlon) - as.Date(date_ymd_use) < weeks_soon*7,  paste0("DUE SOON: ", date_dueTriathlon)
+  )]
   
-  wb <- export_print_list(dt_start_print, date_ymd_nice, dt_marshals = dt_marshals)
+  
+  wb <- export_print_list(dt_start_print, date_ymd_nice, dt_marshals = dt_marshals,
+                          date_ymd_membership_update = dt_twintownMeberships$date_updated |> max())
   
   saveWorkbook(wb, paths_out$print, overwrite = TRUE)
   
