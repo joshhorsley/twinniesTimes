@@ -236,8 +236,8 @@ prep_startLatest <- function(conn,
                                          .(Name = as.character(glue::glue("Placeholder Sprint {name} {chip}",
                                                                           name = name_registration,
                                                                           chip = chip_character)), 
-                                           Distance = "Sprint",
-                                           Category = "Handicap Points",
+                                           Distance = "",
+                                           Category = "",
                                            Bib = NA,
                                            Wave,
                                            `Start time`)]
@@ -259,6 +259,8 @@ prep_startLatest <- function(conn,
                                                         Wave,
                                                         wave_time,
                                                         `Start time`)]
+  # for people not registered for sprint, from their sprint placeholder, remove Distance and Category
+  dt_all_with_time_except_non_sprint[Bib %notin% dt_all_registered_except_non_sprint$Bib, `:=`(Distance = NA, Category = NA)]
   
   
   # Export webscorer --------------------------------------------------------
@@ -269,7 +271,7 @@ prep_startLatest <- function(conn,
     list(
       dt_reg_non_sprint[, .(Name, Distance, Category, Bib, Wave, `Start time`)],
       dt_sprint_new[, .(Name, Distance, Category, Bib, Wave, `Start time`)],
-      dt_sprint_placeholders[, .(Name, Distance, Category, Bib, Wave, `Start time`)],
+      dt_sprint_placeholders[, .(Name, Distance = NA, Category = NA, Bib, Wave, `Start time`)],
       dt_all_with_time_except_non_sprint[, .(Name, Distance, Category, Bib, Wave, `Start time`)],
       dt_always_options[, .(Name, Distance, Category, Bib, Wave, `Start time`)]
     )
@@ -278,6 +280,14 @@ prep_startLatest <- function(conn,
   setorder(dt_start_webscorer_out,`Start time`)
   
   stopifnot(nrow(dt_start_webscorer_out[, .N, by = Name][N>1])==0)
+  
+  # # for those with bibs who were not registered, remove distance and category
+  # dt_start_webscorer_out[
+  #   Bib %notin% dt_reg$Bib & ,
+  #   `:=`(
+  #     Distance = NA,
+  #     Category = NA
+  #   )]
   
   
   write.xlsx(dt_start_webscorer_out, paths_out$webscorer)
