@@ -1,5 +1,23 @@
 
-init_db <- function(path_db) {
+init_db <- function(
+    path_db,
+    path_manual
+    ) {
+  
+
+# Get distances -----------------------------------------------------------
+
+  
+  dt_distances <- read_excel(path_manual,sheet = "distances") |> 
+    setDT()
+  
+  sql_distances <- dt_distances$distanceID |> 
+    paste0(" INT,") |> 
+    paste0(collapse = "\n")
+  
+
+# Disconnect/Remove existing connection -----------------------------------
+
   
   if(exists("conn")) dbDisconnect(conn)
   
@@ -83,78 +101,52 @@ FOREIGN KEY(season) REFERENCES seasons(season)
   
   
   
-  dbExecute(conn, "CREATE TABLE totalRacesOverall(
+  dbExecute(conn, glue(
+  "CREATE TABLE totalRacesOverall(
   id_member TEXT,
   races_full INT,
 races_all INT,
-sprint INT,
-aquabike INT,
-tempta INT,
-doubledistance INT,
-doubleaquabike INT,
-palindrometri INT,
-palindromeaquabike INT,
-palindromeswimrun INT,
-swimrun INT,
-riderun INT,
-teams INT,
-longtri INT,
-longaquabike INT,
-rideruntempta INT,
-  FOREIGN KEY(id_member) REFERENCES members(id_member) );") 
+{sql_distances}
+  FOREIGN KEY(id_member) REFERENCES members(id_member) );",
+  sql_distances = sql_distances
+  )
+  )
   
   
   
-  dbExecute(conn, "CREATE TABLE totalRacesSeason(
+  dbExecute(conn, glue(
+  "CREATE TABLE totalRacesSeason(
 id_member TEXT,
 season TEXT,
 races_full INT,
 races_all INT,
-sprint INT,
-aquabike INT,
-tempta INT,
-doubledistance INT,
-doubleaquabike INT,
-palindrometri INT,
-palindromeaquabike INT,
-palindromeswimrun INT,
-swimrun INT,
-riderun INT,
-teams INT,
-longtri INT,
-longaquabike INT,
-rideruntempta INT,
+{sql_distances}
 FOREIGN KEY(id_member) REFERENCES members(id_member),
 FOREIGN KEY(season) REFERENCES seasons(season) 
-);") 
+);",
+  sql_distances = sql_distances
+  ) 
+  )
   
   
   
   
-  dbExecute(conn, "CREATE TABLE totalRacesDate(
+  dbExecute(conn, glue(
+  "CREATE TABLE totalRacesDate(
 id_member TEXT,
 season TEXT,
 date_ymd TEXT,
 races_full INT,
 races_all INT,
-sprint INT,
-aquabike INT,
-tempta INT,
-doubledistance INT,
-doubleaquabike INT,
-palindrometri INT,
-palindromeaquabike INT,
-palindromeswimrun INT,
-swimrun INT,
-riderun INT,
-teams INT,
-longtri INT,
-longaquabike INT,
-rideruntempta INT,
+{sql_distances}
 FOREIGN KEY(id_member) REFERENCES members(id_member),
 FOREIGN KEY(season) REFERENCES seasons(season),
 FOREIGN KEY(date_ymd) REFERENCES races(date_ymd)
-);") 
+);",
+  sql_distances = sql_distances
+  
+  )
+  ) 
   
   
   dbExecute(conn,"CREATE TABLE raceResults(
