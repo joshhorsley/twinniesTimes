@@ -31,7 +31,9 @@ twintownsMembershipID INT UNIQUE);")
 chip INT,
 id_member,
 date_assigned TEXT,
-FOREIGN KEY(id_member) REFERENCES members(id_member) );") 
+FOREIGN KEY(id_member) REFERENCES members(id_member),
+FOREIGN KEY(date_assigned) REFERENCES races(date_ymd)
+            );") 
   
   
   dbExecute(conn, "CREATE TABLE memberChipLatest(
