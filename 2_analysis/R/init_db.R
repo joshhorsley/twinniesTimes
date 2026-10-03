@@ -281,8 +281,21 @@ FOREIGN KEY(date_ymd) REFERENCES races(date_ymd)
   present TEXT,
   bestTimeSprintOverride INT,
   FOREIGN KEY(date_ymd) REFERENCES races(date_ymd)
-)")  
+)")
   
+  
+# Start time overrides ----------------------------------------------------
+
+  
+  dbExecute(conn, "CREATE TABLE startOverride(
+id_member TEXT NOT NULL,
+distanceID TEXT,
+categoryMatch TEXT,
+categorySet TEXT,
+startSetSeconds INT,
+FOREIGN KEY(id_member) REFERENCES members(id_member),
+FOREIGN KEY(distanceID) REFERENCES distances(distanceID)
+)")
   
   return(conn) 
   
