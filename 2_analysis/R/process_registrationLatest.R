@@ -379,7 +379,7 @@ prep_startLatest <- function(
     if(nrow(dt_concern)) {
       
       message("Acknowledgement issues:")
-      print(dt_reg[acknowledge_timing!="Y" | acknowledge_roadRules!="Y"])
+      print(dt_concern)
     }
   }
   
