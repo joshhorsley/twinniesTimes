@@ -3,8 +3,11 @@
 #' wave_time    - character hms display on print sheet, not used for control
 
 
-prep_startLatest <- function(conn,
-                             messages = TRUE) {
+prep_startLatest <- function(
+    conn,
+    messages = TRUE,
+    membership_soon_week =  0 # set as 0 to omit
+    ) {
   
   
   # Load --------------------------------------------------------------------
@@ -324,7 +327,6 @@ prep_startLatest <- function(conn,
   dt_twintownMeberships <- dt_dbReadTable(conn, "twintownMemberships")
   
   dt_twintownMeberships[dt_members, on = .(twintownsMembershipID), id_member := i.id_member]
-  weeks_soon <- 2
   
   # Export print ------------------------------------------------------------
   
@@ -358,7 +360,7 @@ prep_startLatest <- function(conn,
     is.na(date_dueTriathlon), paste0("NONE SINCE ", dt_twintownMeberships$date_updated |> min()),
     is.na(Bib), "NO CHIP - FIRST RACE?",
     date_dueTriathlon < date_ymd_use, paste0("EXPIRED: ", date_dueTriathlon),
-    as.Date(date_dueTriathlon) - as.Date(date_ymd_use) < weeks_soon*7,  paste0("DUE SOON: ", date_dueTriathlon)
+    (membership_soon_week > 0) & (as.Date(date_dueTriathlon) - as.Date(date_ymd_use) < membership_soon_week*7),  paste0("DUE SOON: ", date_dueTriathlon)
   )]
   
   
