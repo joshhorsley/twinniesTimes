@@ -263,6 +263,22 @@ prep_startLatest <- function(conn,
   dt_all_with_time_except_non_sprint[Bib %notin% dt_all_registered_except_non_sprint$Bib, `:=`(Distance = NA, Category = NA)]
   
   
+
+  # Start time overrides ----------------------------------------------------
+
+
+  dt_startOverride <- dt_dbReadTable(conn, "startOverride")
+  
+  dt_startOverride[, `Start time` := seconds_to_hms_simple(dt_timeOffsets$startOffset + startSetSeconds)]
+  dt_startOverride[, c("wave_time","Wave") := seconds_to_hms_simple(21600L + startSetSeconds)]
+  
+  dt_startOverride[dt_memberChipLatest, on = .(id_member), chip_character := i.chip_character]
+  
+  dt_distances <- dt_dbReadTable(conn, "distances")
+  
+  dt_startOverride[dt_distances, on = .(distanceID), distanceDisplay := i.distanceDisplay]
+  
+  
   # Export webscorer --------------------------------------------------------
   
   
@@ -276,6 +292,15 @@ prep_startLatest <- function(conn,
       dt_always_options[, .(Name, Distance, Category, Bib, Wave, `Start time`)]
     )
   )
+  
+  dt_start_webscorer_out[
+    dt_startOverride,
+    on = .(Bib = chip_character, Distance = distanceDisplay),
+    `:=`(
+      `Start time` = `i.Start time`,
+      Wave = i.Wave,
+      Category = i.categorySet
+    )]
   
   setorder(dt_start_webscorer_out,`Start time`)
   
@@ -311,6 +336,14 @@ prep_startLatest <- function(conn,
       dt_all_registered_except_non_sprint[, .(Name, Distance, Category, Bib, wave_time)]
     )
   )
+  
+  dt_start_print[
+    dt_startOverride,
+    on = .(Bib = chip_character, Distance = distanceDisplay),
+    `:=`(
+      wave_time = i.wave_time,
+      Category = i.categorySet
+    )]
   
   dt_start_print[dt_memberChipLatest, on = .(Bib = chip_character), id_member := i.id_member]
   dt_start_print[dt_totalRacesOverall, on = .(id_member), `:=`(races_full = i.races_full,

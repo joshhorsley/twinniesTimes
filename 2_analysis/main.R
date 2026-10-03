@@ -115,6 +115,7 @@ init_startTimesAndPoints(conn, paths$manual)
 
 
 init_registrations(conn, paths$webscorer)
+init_startOverride(conn, paths$manual)
 
 
 # Prep website data -------------------------------------------------------
