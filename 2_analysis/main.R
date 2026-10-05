@@ -57,7 +57,7 @@ privateKeys <- loadPrivateKeys(paths$private)
 # Initialise db -----------------------------------------------------------
 
 
-conn <- init_db(paths$db)
+conn <- init_db(paths$db, paths$manual)
 
 
 # Race info ---------------------------------------------------------------
