@@ -53,7 +53,7 @@ paths <- list(
 
 privateKeys <- loadPrivateKeys(paths$private)
 
-  
+
 # Initialise db -----------------------------------------------------------
 
 
@@ -186,6 +186,27 @@ if(FALSE) {
   process_mailChimpLatest(conn, paths$dir_log_mailchimp, privateKeys$mailChimp)
   quarto::quarto_render("docs/membership.qmd")
   # prep_membershipPrintout(conn)
-  prep_startTeams(conn, do_print = TRUE, do_allocation = FALSE)
+  prep_startTeams(conn, do_print = FALSE, do_allocation = TRUE)
+  
+  # results email test
+  campaign_id <- sendMailChimpResultsEmail(
+    conn,
+    target = "test",
+    mailChimpCred = privateKeys$mailChimp,
+    test_address = privateKeys$testAddress
+  )
+  
+  # check ready to send
+  mailChimpCheck <- py_mailChimp_check_campaign(campaign_id, privateKeys$mailChimp)
+  mailChimpCheck$is_ready
+  
+  # results email real using tested campaign ID
+  sendMailChimpResultsEmail(
+    conn,
+    campaign_id = campaign_id,
+    target = "audience",
+    mailChimpCred = privateKeys$mailChimp
+  )
 }
 
+ 

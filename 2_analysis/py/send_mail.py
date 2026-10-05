@@ -2,7 +2,7 @@ import mailchimp_marketing as MailchimpMarketing
 from mailchimp_marketing.api_client import ApiClientError
 
 
-def pyCreateNewCampaign(title, subject_line, mailChimpCred):
+def py_CreateNewCampaign(title, subject_line, mailChimpCred):
 
   try:
     client = MailchimpMarketing.Client()
@@ -13,6 +13,9 @@ def pyCreateNewCampaign(title, subject_line, mailChimpCred):
   
     response = client.campaigns.create({
       "type": "regular",
+      "recipients" : {
+        "list_id": mailChimpCred["list_id"]
+      },
       "settings": {
         "subject_line": subject_line,
         "title": title
@@ -54,5 +57,38 @@ def py_mailChimp_test_email(campaign_id, test_emails, mailChimpCred):
   except ApiClientError as error:
     print("Error: {}".format(error.text))
     
-    return response
+  return response
   
+  
+def py_mailChimp_send(campaign_id, mailChimpCred):
+ 
+  try:
+    client = MailchimpMarketing.Client()
+    client.set_config({
+      "api_key":  mailChimpCred["api_key"],
+      "server": mailChimpCred["server"]
+    })
+
+    response = client.campaigns.send(campaign_id)
+  except ApiClientError as error:
+    print("Error: {}".format(error.text))
+    
+  return response
+  
+  
+def py_mailChimp_check_campaign(campaign_id, mailChimpCred):
+
+  try:
+    client = MailchimpMarketing.Client()
+    client.set_config({
+      "api_key":  mailChimpCred["api_key"],
+      "server": mailChimpCred["server"]
+    })
+  
+    response = client.campaigns.get_send_checklist(campaign_id)
+    print(response)
+  except ApiClientError as error:
+    print("Error: {}".format(error.text))
+    
+  return response
+

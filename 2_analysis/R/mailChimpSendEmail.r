@@ -5,6 +5,7 @@
 mailChimpSendEmail <- function(
     path_email_template = "../email_templates/basic.html",
     campaign_title,
+    campaign_id,
     subject_line,
     email_title="",
     email_body="",
@@ -14,6 +15,8 @@ mailChimpSendEmail <- function(
     mailChimpCred
 ) {
   
+  
+  source_python("py/send_mail.py")
   
   # Input checking ----------------------------------------------------------
   
@@ -28,14 +31,18 @@ mailChimpSendEmail <- function(
   # Setup new campaign ------------------------------------------------------
   
   
-  response_create_campaign <- pyCreateNewCampaign(campaign_title, subject_line, mailChimpCred)
-  
-  have_campaign <- "id" %in% names(response_create_campaign)
-  
-  stopifnot(have_campaign)
-  
-  campaign_id <- response_create_campaign$id
-  
+  if(missing(campaign_id)) {
+    
+    message("No campaign ID provided, creating one")
+    
+    response_create_campaign <- py_CreateNewCampaign(campaign_title, subject_line, mailChimpCred)
+    
+    have_campaign <- "id" %in% names(response_create_campaign)
+    
+    stopifnot(have_campaign)
+    
+    campaign_id <- response_create_campaign$id
+  }
   
   # Set content -------------------------------------------------------------
   
@@ -50,7 +57,8 @@ mailChimpSendEmail <- function(
     .open="{SUBSTART{",
     .close = "}SUBCLOSE}",
     email_title = email_title,
-    email_body = email_body
+    email_body = email_body,
+    email_year = Sys.Date() |> format("%Y")
   )
   
   response_content_set <- py_mailChimpSetContent(campaign_id, html_filled, mailChimpCred)
@@ -59,10 +67,11 @@ mailChimpSendEmail <- function(
   # Send --------------------------------------------------------------------
   
   
-  switch(target,
-         "test" = py_mailChimp_test_email(campaign_id, test_address, mailChimpCred),
-         "target" = stop("not ready yet")
-         
+  response_send <- switch(target,
+                          "test" = py_mailChimp_test_email(campaign_id, test_address, mailChimpCred),
+                          "audience" = py_mailChimp_send(campaign_id, mailChimpCred)
   )
+  
+  return(campaign_id)
   
 }
