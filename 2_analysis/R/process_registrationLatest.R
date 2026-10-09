@@ -357,7 +357,7 @@ prep_startLatest <- function(
   
   dt_start_print[dt_twintownMeberships, on = .(id_member), date_dueTriathlon := i.date_dueTriathlon]
   dt_start_print[, membershipStatus := fcase(
-    is.na(date_dueTriathlon), paste0("NONE SINCE ", dt_twintownMeberships$date_updated |> min()),
+    is.na(date_dueTriathlon), "NO MEMBERSHIP",
     is.na(Bib), "NO CHIP - FIRST RACE?",
     date_dueTriathlon < date_ymd_use, paste0("EXPIRED: ", date_dueTriathlon),
     (membership_soon_week > 0) & (as.Date(date_dueTriathlon) - as.Date(date_ymd_use) < membership_soon_week*7),  paste0("DUE SOON: ", date_dueTriathlon)

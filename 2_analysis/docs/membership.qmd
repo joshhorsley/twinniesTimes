@@ -1,6 +1,7 @@
 ---
 format:
-  docx: default
+  docx:
+    reference-doc: membership_reference_style.docx
 execute:
   echo: false
   warning: false
@@ -10,7 +11,7 @@ editor_options:
   
 ---
 
-::: {.landscape}
+<!-- ::: {.landscape} -->
 
 ```{r}
 
@@ -26,6 +27,7 @@ library(openxlsx)
 library(reticulate)
 library(english)
 library(multicool)
+library(knitr)
 
 library(here)
 
@@ -52,13 +54,19 @@ dt_twintownMeberships <- dt_dbReadTable(conn, "twintownMemberships")
 
 # options -----------------------------------------------------------------
 
+n_races_recent <- 6
 
-n_months_recent <- 12 #how far back to check for race results
+# n_months_recent <- 12 #how far back to check for race results
 n_weeks_soon <- 6
 
 date_today <- dt_twintownMeberships$date_updated |> max() |> ymd()
-date_cutoff <- date_today - months(n_months_recent)
-date_cutoff_char <- date_cutoff |> format("%Y-%m-%d")
+# date_cutoff <- date_today - months(n_months_recent)
+# date_cutoff_char <- date_cutoff |> format("%Y-%m-%d")
+
+date_cutoff <- dt_raceResults[
+  date_ymd < date_today,
+  .(date_cutoff = date_ymd |> unique() |> sort(decreasing = TRUE) |> (function(x) x[n_races_recent])())]$date_cutoff
+
 
 date_soon <- date_today + weeks(n_weeks_soon)
 date_soon_char <- date_soon |> format("%Y-%m-%d")
@@ -77,7 +85,7 @@ dt_twintownMeberships[, is_latest := date_updated == max(date_updated), by = .(t
 dt_twintownMebershipsLatest <- dt_twintownMeberships[(is_latest)]
 
 # check who's raced in period
-dt_raceResultsRecent <- dt_raceResults[date_ymd >= date_cutoff_char]
+dt_raceResultsRecent <- dt_raceResults[date_ymd >= date_cutoff]
 
 dt_membersRecent <- dt_raceResultsRecent[,.
                                          (n_races = .N,
@@ -89,7 +97,8 @@ dt_membersRecent[dt_members,
                  `:=`(
                    name_display = i.name_display,
                    twintownsMembershipID = i.twintownsMembershipID,
-                   name_last = i.name_last
+                   name_last = i.name_last,
+                   name_first = i.name_first
                  )]
 
 dt_membersRecent[dt_twintownMebershipsLatest,
@@ -110,32 +119,46 @@ dt_membersRecent[dt_twintownMebershipsLatest,
 dt_membersRecent[, is_current := !is.na(date_dueTriathlon) & date_dueTriathlon >= date_today & date_dueMain > date_today]
 dt_membersRecent[, is_dueSoon := !is.na(date_dueTriathlon) & (is_current) & (date_dueTriathlon < date_soon_char | date_dueMain < date_soon_char) ]
 
+setorder(dt_membersRecent, name_last, name_first)
+
 ```
 
-# Membership status
+# Membership status - as of `r toNiceDate(date_today)` 
 
-As of `r toNiceDate(date_today)` for all racers in last `r n_months_recent` months (since `r toNiceDate(date_cutoff)`).
+For all racers in last `r n_races_recent` races (since `r toNiceDate(date_cutoff)`).
 
-Those without a TwinTowns ID have no membership recorded since at least `r toNiceDate(date_membershipEarliest)`.
+<!-- Those without a TwinTowns ID have no membership recorded since at least `r toNiceDate(date_membershipEarliest)`. -->
 
-## No/Expired Membership (For either main or tri club)
 
 ```{r}
 dt_none <- dt_membersRecent[
   !(is_current)][
-    order(-n_races, -date_last_race)][
+    # order(-n_races, -date_last_race)][
       , .(Name = name_display,
-          ID = ifelse(is.na(twintownsMembershipID), "", twintownsMembershipID),
-          n_races,
+          # ID = ifelse(is.na(twintownsMembershipID), "", twintownsMembershipID),
+          # n_races,
           `Latest race` = date_last_race,
-          `Tri club due` = ifelse(is.na(date_dueTriathlon), "", date_dueTriathlon),
-          `Main club due` = ifelse(is.na(date_dueMain), "", date_dueMain)
+          `Tri club due` = ifelse(is.na(date_dueTriathlon), "", date_dueTriathlon)#,
+          #`Main club due` = ifelse(is.na(date_dueMain), "", date_dueMain
+          # )
       )
     ]
 
-setnames(dt_none, "n_races", glue("Races in {n_months_recent} months", n_months_recent = n_months_recent))
+dt_none[`Tri club due`=="", `Tri club due` := "NO MEMBERSHIP"]
+# setnames(dt_none, "n_races", glue("Races in {n_months_recent} months", n_months_recent = n_months_recent))
 
-knitr::kable(dt_none)
+# knitr::kable(dt_none)
+```
+
+## Has raced without a membership
+
+```{r}
+dt_none[`Latest race`> `Tri club due` | `Tri club due` == "NO MEMBERSHIP"] |> kable()
+```
+
+## Membership expired but haven't raced since
+```{r}
+dt_none[`Latest race`< `Tri club due` & !(`Tri club due` == "NO MEMBERSHIP")] |> kable()
 ```
 
 
@@ -146,18 +169,18 @@ dt_soon <- dt_membersRecent[
   (is_dueSoon)][
     order(-n_races, -date_last_race)][
       , .(Name = name_display,
-          ID = ifelse(is.na(twintownsMembershipID), "", twintownsMembershipID),
-          n_races,
+          # ID = ifelse(is.na(twintownsMembershipID), "", twintownsMembershipID),
+          # n_races,
           `Latest race` = date_last_race,
-          `Tri club due` = ifelse(is.na(date_dueTriathlon), "", date_dueTriathlon),
-          `Main club due` = ifelse(is.na(date_dueMain), "", date_dueMain)
+          `Tri club due` = ifelse(is.na(date_dueTriathlon), "", date_dueTriathlon)
+          # `Main club due` = ifelse(is.na(date_dueMain), "", date_dueMain)
       )
     ]
 
-setnames(dt_soon, "n_races", glue("Races in {n_months_recent} months", n_months_recent = n_months_recent))
+# setnames(dt_soon, "n_races", glue("Races in {n_months_recent} months", n_months_recent = n_months_recent))
 
 knitr::kable(dt_soon)
 ```
 
 
-:::
+<!-- ::: -->
