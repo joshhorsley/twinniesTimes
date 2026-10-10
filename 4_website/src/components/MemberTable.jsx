@@ -16,6 +16,7 @@ export default function MemberTable({ tabData, dataOption }) {
 
   return (
     <>
+      {dataOption == "all" &&  <p><b>NOTE: To view times, select a distance from the options above.</b></p>}
       {dataOption == "all" && <p>Distance totals for 2018/19 onwards</p>}
       {dataOption != "all" && <p>Races 2024/25 onwards</p>}
       <DataTable
