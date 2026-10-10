@@ -197,6 +197,7 @@ if(FALSE) {
   )
   
   # check ready to send
+  source_python("py/send_mail.py")
   mailChimpCheck <- py_mailChimp_check_campaign(campaign_id, privateKeys$mailChimp)
   mailChimpCheck$is_ready
   
