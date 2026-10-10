@@ -224,7 +224,7 @@ prep_startLatest <- function(
   # new sprint people - this takes bib from registration
   distances_handicapped <- c("Sprint", "Palindrome Tri")
   
-  dt_sprint_new <- dt_reg[Bib %notin% dt_bestTimes$chip & Distance %in% distances_handicapped,
+  dt_sprint_new <- dt_reg[Bib %notin% dt_bestTimes[is.finite(nextStartUse)]$chip & Distance %in% distances_handicapped,
                           .(Name,
                             Distance,
                             Category = "Non-handicapped",
@@ -246,7 +246,7 @@ prep_startLatest <- function(
                                            `Start time`)]
   
   
-  dt_all_with_time_except_non_sprint <- dt_bestTimes[!is.na(chip_character) & chip_character %notin% dt_reg_non_sprint$Bib,
+  dt_all_with_time_except_non_sprint <- dt_bestTimes[!is.na(chip_character) & chip_character %notin% dt_reg_non_sprint$Bib & chip_character %notin% dt_sprint_new$Bib,
                                                      .(Name = name_display,
                                                        Distance,
                                                        Category,
